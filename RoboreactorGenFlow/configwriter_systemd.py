@@ -1,9 +1,3 @@
-'''
-Author: Chanapai Chuadchum
-Project: Roboreactor_cponfig_writer_systemd
-Description: The software to write the configuretion file to system running at boot
-Latest_update:2022/11/23
-'''
 import os
 import pwd
 import time
@@ -31,7 +25,7 @@ print(os_system, os_release, os_machine, os_processor)
 project_name = 'Project:RoboreactorGenFlow'
 mode = 'multi-user.target'
 Python_exc_path = "/bin/bash "
-Pathon_exc_path1 = "/usr/bin/python3 "
+Python_exc_path1 = "/usr/bin/python3 "
 Working_path = "/home/"+user+"/RoboreactorGenFlow"
 # Change username over the platform
 Execute_path = "/home/"+user+"/RoboreactorGenFlow/runsystem.sh"

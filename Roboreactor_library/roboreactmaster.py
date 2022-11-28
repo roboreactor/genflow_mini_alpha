@@ -1,101 +1,101 @@
-'''
-Author: Chanapai Chuadchum
-Project: Roboreactor code generator
-Date of development: 2022-05-27 13:55:43.077220
-Roboreactor All right reserved® 
-'''
-#import platform # This cannot be using inside the jetson Nano version 
+# import platform # This cannot be using inside the jetson Nano version
+from flask import Flask, request, render_template, url_for, redirect, jsonify
+from authenticationapi_request import Authentication_system
+import configparser
+from geopy.geocoders import Nominatim  # Getting the geo positioning data
+import difflib
+import wordninja
+from googletrans import Translator
+from google_speech import*
+import speech_recognition as sr
+import smbus
+import base64
+import numpy as np
+import math
+import struct
+import subprocess
+import imutils
+import cv2
+from itertools import count
+import datetime  # Getting date time data
+import time
+import sys
+import re
+import csv
+import serial
+from printrun import gcoder
+from printrun.printcore import printcore
+from pyzbar import pyzbar
+import pyfirmata  # Getting the pyfirmata for the librery of the serial communication between the hardware
+import face_recognition  # Getting the face recognition to working
+import pandas as pd
+import getpass
+import pickle
+import json
+import socket
+import threading
 import os
 import requests  # Getting the micro controller data
-os_support = os.uname()  # using OS name instead 
-#print(os_support)
-#Checking the kernel release for the 
-ar_os = os_support.release.split("-")[len(os_support.release.split("-"))-1]  # This need to compare >
-os_service = requests.get("https://roboreactor.com/OS_support") # Getting the os support data 
-list_support_os = os_service.json().get('OS_data') # Getting the os data list 
-compat_gpio_board = list_support_os # Request compatible list hear from the web 
-#print(ar_os)
+os_support = os.uname()  # using OS name instead
+# print(os_support)
+# Checking the kernel release for the
+ar_os = os_support.release.split(
+    "-")[len(os_support.release.split("-"))-1]  # This need to compare >
+# Getting the os support data
+os_service = requests.get("https://roboreactor.com/OS_support")
+list_support_os = os_service.json().get('OS_data')  # Getting the os data list
+compat_gpio_board = list_support_os  # Request compatible list hear from the web
+# print(ar_os)
 if str(ar_os) in compat_gpio_board:
-       #Checking list support i2c    
-       import adafruit_mpu6050
-       import adafruit_icm20x
-       from adafruit_pca9685 import PCA9685
-       from adafruit_motor import servo
-       import busio
-       from board import SCL, SDA
-       if str(ar_os) == list_support_os[1]:
-          if 'Raspberrypi architecture' == os_service.json().get(str(ar_os)): # Checking if the raspbe>
+    # Checking list support i2c
+    import adafruit_mpu6050
+    import adafruit_icm20x
+    from adafruit_pca9685 import PCA9685
+    from adafruit_motor import servo
+    import busio
+    from board import SCL, SDA
+    if str(ar_os) == list_support_os[1]:
+        if 'Raspberrypi architecture' == os_service.json().get(str(ar_os)):  # Checking if the raspbe>
             import gpiozero
             from gpiozero import Robot, MCP3008
             from gpiozero import PhaseEnableMotor  # Getting the motor to working
-       i2c_bus = busio.I2C(SCL, SDA)
+    i2c_bus = busio.I2C(SCL, SDA)
 
 
-import threading
-import socket
-import json
-import pickle
-import getpass
-import pandas as pd
 # Getting the analog value input from the library
 
-import face_recognition  # Getting the face recognition to working
-import pyfirmata  # Getting the pyfirmata for the librery of the serial communication between the hardware
-from pyzbar import pyzbar
-from printrun.printcore import printcore
-from printrun import gcoder
-import serial
-import csv
-import re
 
-import sys
-import time
-import datetime  # Getting date time data
-from itertools import count
-import cv2
-import imutils
-import subprocess
-import struct
-import math
-import numpy as np
-from pyzbar import pyzbar
-import base64
-import smbus
 #import cvlib as cv
 #from cvlib.object_detection import draw_bbox
-import speech_recognition as sr
-from google_speech import*
-from googletrans import Translator
-import wordninja
-import difflib
-from geopy.geocoders import Nominatim  # Getting the geo positioning data
-import configparser  
-from authenticationapi_request import Authentication_system 
-from flask import Flask,request,render_template,url_for,redirect,jsonify 
-#try:
-    #print("Give the permission to local uart")
+# try:
+#print("Give the permission to local uart")
 #    os.system("sudo chmod -R 777 /dev/ttyAMA0")
 #    os.system("sudo chmod -R 777 /dev/ttyS0")
-#except:
+# except:
 #    pass
 
-# The file need to be the static name inorder toload the file for authentication 
-path_token_secret_key = "/home/"+str(os.listdir("/home/")[0])+"/RoboreactorGenFlow/"
+# The file need to be the static name inorder toload the file for authentication
+path_token_secret_key = "/home/" + \
+    str(os.listdir("/home/")[0])+"/RoboreactorGenFlow/"
 try:
-   Load_json = open(path_token_secret_key+"data_token_secret.json",'r') # Load the json data in local computer this file need to be export from the website 
-   OAuth  = json.loads(Load_json.read())  # Load json data of the persal OAuth downloaded from the web and put into the local file 
-   Account_data = OAuth.get('Account')
-   Token_data = OAuth.get('Token')
-   Secret_data = OAuth.get('Secret') 
-   Project_data = OAuth.get('project_name') # getting the project name  
+    # Load the json data in local computer this file need to be export from the website
+    Load_json = open(path_token_secret_key+"data_token_secret.json", 'r')
+    # Load json data of the persal OAuth downloaded from the web and put into the local file
+    OAuth = json.loads(Load_json.read())
+    Account_data = OAuth.get('Account')
+    Token_data = OAuth.get('Token')
+    Secret_data = OAuth.get('Secret')
+    Project_data = OAuth.get('project_name')  # getting the project name
 except:
-     pass 
+    pass
 
 try:
-     Data = Authentication_system(Account_data,Token_data,Secret_data,Project_data)  # Getting the project data to verify the project data to post request sendback the data 
-     print(Data) # Getting the email to verfy the data to send back to request the project and send back data to the user profile information  
-except: 
-     pass 
+    # Getting the project data to verify the project data to post request sendback the data
+    Data = Authentication_system(
+        Account_data, Token_data, Secret_data, Project_data)
+    print(Data)  # Getting the email to verfy the data to send back to request the project and send back data to the user profile information
+except:
+    pass
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # These function only able to enable from the singleboard computer
 #user = getpass.getuser()
@@ -108,12 +108,12 @@ user = os.listdir("/home/")[0]
 # Import the PCA9685 module.
 # Create the I2C bus interface.
 try:
-     #print("i2c devices ", i2c_bus.scan())
-     pca = PCA9685(i2c_bus)
-     pca.frequency = 50
+    #print("i2c devices ", i2c_bus.scan())
+    pca = PCA9685(i2c_bus)
+    pca.frequency = 50
 except:
-     #print("No i2c servo devices connect with the computer")
-     pass 
+    #print("No i2c servo devices connect with the computer")
+    pass
 mem_sub_variable = []  # mem subscriber return variable
 # Collected the used pins on the list to avoid clash on the system hardware control
 mem_used_pins = {}
@@ -378,7 +378,7 @@ class Action_control(object):
     # Local GPIO on Machine
     # DC motor driver with on-board gpio
     def DC_motor_driver_set(self, number_index, direction, gipoL, gpioR, pwm, boolean):
-            # This function working on 2 pins input from the gpioL gpioR at the same time from the input
+        # This function working on 2 pins input from the gpioL gpioR at the same time from the input
         exec("Motor_"+str(number_index)+" = PhaseEnableMotor("+str(gipoL) +
              ","+str(gpioR), +"pwm="+boolean+","+"pin_factory=None)")
         exec("Motor_"+str(number_index)+"."+direction+"(speed = "+str(pwm))
@@ -437,10 +437,11 @@ class Action_control(object):
                  str(number)+".write(0)"+"\n\t"+"motorr_"+str(number)+".write(0)")
 
     # Getting the stepper motor board name to classify the board
-    def Serial_stepper_driver(self, stepper_num, serialdev,serial_com, g_code):
+    def Serial_stepper_driver(self, stepper_num, serialdev, serial_com, g_code):
 
         # or p.printcore('COM3',115200) on Windows
-        exec("global motion_"+str(stepper_num)+";motion_"+str(stepper_num)+" = printcore(serialdev, "+str(serial_com)+")")
+        exec("global motion_"+str(stepper_num)+";motion_" +
+             str(stepper_num)+" = printcore(serialdev, "+str(serial_com)+")")
         exec("while not motion_"+str(stepper_num)+".online:\n\ttime.sleep(0.1)")
         # this will send M105 immediately, ahead of the rest of the print
         print("motion_"+str(stepper_num)+".send_now('"+str(g_code)+"')")
@@ -451,25 +452,28 @@ class Action_control(object):
         exec("motion_"+str(stepper_num)+".pause()")
         exec("motion_"+str(stepper_num)+".resume()")
         exec("motion_"+str(stepper_num)+".disconnect()")
-    
-    def Serial_BLDC_motor_Driver(self,mcu_name,GPIO, pwm,servo_name):
 
-             exec("") # BLDC motor control with the PWM and serial,UART control positioning 
-             
+    def Serial_BLDC_motor_Driver(self, mcu_name, GPIO, pwm, servo_name):
+
+        exec("")  # BLDC motor control with the PWM and serial,UART control positioning
+
     # Build the servo motor from scratch using the control theory algorithm to calibrate the angle of the servo motor
-    def Serial_Servo_motor(self,servo_number,servo_name,mcu_number,gpio):
-             if mcu_number == "STM32F103C8TX":
-                      exec("global Servo_motor_"+str(servo_number)+";Servo_motor_"+str(servo_number)+" = servo_name.get_pin('d:"+str(gpio)+":s')") # Getting the servo gpio setup 
-    def Serial_servo_control(self,mcu_number,servo_number,angle): 
-             if mcu_number == "STM32F103C8TX": 
-                      exec("Servo_motor_"+str(servo_number)+".write("+str(angle)+")") #Getting angle in degree 
+    def Serial_Servo_motor(self, servo_number, servo_name, mcu_number, gpio):
+        if mcu_number == "STM32F103C8TX":
+            exec("global Servo_motor_"+str(servo_number)+";Servo_motor_"+str(servo_number) +
+                 " = servo_name.get_pin('d:"+str(gpio)+":s')")  # Getting the servo gpio setup
+
+    def Serial_servo_control(self, mcu_number, servo_number, angle):
+        if mcu_number == "STM32F103C8TX":
+            # Getting angle in degree
+            exec("Servo_motor_"+str(servo_number)+".write("+str(angle)+")")
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     # I2C GPIO
     def I2C_DC_motordriver(self, i2c_address, gpiol, gpior):
 
-              pass
+        pass
 
     def I2C_servo_motor(self, name_servo, angle, pins):
 
@@ -582,7 +586,7 @@ class Visual_Cam_optic(object):
              str(cam_num)+","+"buffer_"+str(cam_num)+" = cv2.imencode('.jpg',frame_"+str(cam_num)+",[cv2.IMWRITE_JPEG_QUALITY,80])\n\t\t\tmessage_"+str(cam_num)+" = base64.b64encode(buffer_"+str(cam_num)+")"+"\n\t\t\tserver_socket_"+str(cam_num)+".sendto(message_"+str(cam_num)+",client_addr_"+str(cam_num)+")"+"\n\t\t\tframe_"+str(cam_num)+" = cv2.putText(frame_"+str(cam_num)+",'FPS: '+str(fps_"+str(cam_num)+"),(10,40),cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)")  # Getting the frame from the video input
 
     # Getting the host ip data
-    def Camera_subscriber(self, cam_num, Buffers, portdata, ip_host,ip_message,port_message):
+    def Camera_subscriber(self, cam_num, Buffers, portdata, ip_host, ip_message, port_message):
         # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         exec("BUFF_SIZE_"+str(cam_num)+" = "+str(Buffers))
         exec("client_socket_"+str(cam_num) +
@@ -602,9 +606,8 @@ class Visual_Cam_optic(object):
         # Start the loop of frame rate read
 
         exec("for r_"+str(cam_num)+" in count(0):"+"\n\t\tpacket_"+str(cam_num)+",_"+str(cam_num)+" = client_socket_"+str(cam_num)+".recvfrom(BUFF_SIZE_"+str(cam_num)+")"+"\n\t\tdata_"+str(cam_num)+" = base64.b64decode(packet_" +
-             str(cam_num)+",' /')"+"\n\t\tnpdata_"+str(cam_num)+" = np.fromstring(data_"+str(cam_num)+",dtype=np.uint8)"+"\n\t\tglobal frame_"+str(cam_num)+";frame_"+str(cam_num)+" = cv2.imdecode(npdata_"+str(cam_num)+",1)"+'\n\t\tprint("Client_frame",frame_'+str(cam_num)+")") #+"\n\t\tframedat_"+str(cam_num)+" = Internal_Publish_subscriber()"+"\n\t\tframedat_"+str(cam_num)+".Publisher_string('"+str(ip_message)+"',"+"frame_"+str(cam_num)+","+str(port_message)+")")
-             
-        
+             str(cam_num)+",' /')"+"\n\t\tnpdata_"+str(cam_num)+" = np.fromstring(data_"+str(cam_num)+",dtype=np.uint8)"+"\n\t\tglobal frame_"+str(cam_num)+";frame_"+str(cam_num)+" = cv2.imdecode(npdata_"+str(cam_num)+",1)"+'\n\t\tprint("Client_frame",frame_'+str(cam_num)+")")  # +"\n\t\tframedat_"+str(cam_num)+" = Internal_Publish_subscriber()"+"\n\t\tframedat_"+str(cam_num)+".Publisher_string('"+str(ip_message)+"',"+"frame_"+str(cam_num)+","+str(port_message)+")")
+
     # Using to manage the muti perpost camera from the single frame input from the camera to avoid the speed problem
 
     def Multifunctional_camera(self, cam_num, ip_address, port, Width):
@@ -622,8 +625,8 @@ class Visual_Cam_optic(object):
         exec("print('Listening at,socket_address_"+str(cam_num)+"')")
         exec("for r_"+str(cam_num)+" in count(0):"+"\n\tclient_socket_"+str(cam_num)+","+"addr_"+str(cam_num)+" = server_socket_"+str(cam_num)+".accept()"+"\n\tcamera_"+str(cam_num)+" = True"+"\n\tif camera_"+str(cam_num)+" == True:"+"\n\t\tvid_"+str(cam_num)+" = cv2.VideoCapture("+str(cam_num)+")"+"\n\telse:"+"\n\t\tprint('Fail to connect camera "+str(cam_num)+"')"+"\n\ttry:"+"\n\t\tprint('testing  no EOF')"+"\n\t\tif client_socket_"+str(cam_num)+":\n\t\t\tprint('test no EOF')"+"\n\t\t\twhile(vid_"+str(cam_num) +
              ".isOpened()):"+"\n\t\t\t\tprint('Successful running')"+"\n\t\t\t\timg_"+str(cam_num)+",frame_"+str(cam_num)+" = vid_"+str(cam_num)+".read()"+"\n\t\t\t\tframe_"+str(cam_num)+" = imutils.resize(frame_"+str(0)+",width="+str(Width)+")"+"\n\t\t\t\ta_"+str(cam_num)+" = pickle.dumps(frame_"+str(cam_num)+")"+"\n\t\t\t\tmessage_"+str(cam_num)+" = struct.pack('Q',len(a_"+str(cam_num)+"))+a_"+str(cam_num)+"\n\t\t\t\tclient_socket_"+str(cam_num)+".sendall(message_"+str(0)+")"+"\n\texcept:"+"\n\t\tprint('Data fail interprete')")
-    
-    def Cache_camera_server(self,server_ip_address, cache_ip_host, port):
+
+    def Cache_camera_server(self, server_ip_address, cache_ip_host, port):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         host_name = socket.gethostname()
         host_ip = socket.gethostbyname(host_name)
@@ -643,92 +646,103 @@ class Visual_Cam_optic(object):
             client_socket.connect((str(server_ip_address), port))
             data = b""
             payload_size = struct.calcsize("Q")
-            for t in count(0): 
-                      while len(data) < payload_size: 
-                              packet = client_socket.recv(4*1024)
-                              if not packet: break 
-                              data+=packet
-                      packed_msg_size = data[:payload_size]
-                      data = data[payload_size:]
-                      msg_size = struct.unpack("Q",packed_msg_size)[0]
-                      while len(data) < msg_size:
-                               data += client_socket.recv(4*1024) 
-                      frame_data = data[:msg_size]
-                      data = data[msg_size:] 
-                      frame = pickle.loads(frame_data)
-                      key = cv2.waitKey(1) & 0xFF  
-                      print(data)
-                      if key == ord('q'):
-                             break 
-            client_socket.close() 
+            for t in count(0):
+                while len(data) < payload_size:
+                    packet = client_socket.recv(4*1024)
+                    if not packet:
+                        break
+                    data += packet
+                packed_msg_size = data[:payload_size]
+                data = data[payload_size:]
+                msg_size = struct.unpack("Q", packed_msg_size)[0]
+                while len(data) < msg_size:
+                    data += client_socket.recv(4*1024)
+                frame_data = data[:msg_size]
+                data = data[msg_size:]
+                frame = pickle.loads(frame_data)
+                key = cv2.waitKey(1) & 0xFF
+                print(data)
+                if key == ord('q'):
+                    break
+            client_socket.close()
         thread = threading.Thread(target=start_video_stream, args=())
-        thread.start() 
-        def serve_client(addr,client_socket): 
-               global frame 
-               try: 
-                  print('Client {} connected!',format(addr))
-                  if client_socket:
-                         while True: 
-                                a = pickle.dumps(frame)
-                                message = struct.pack("Q",len(a))+a 
-                                client_socket.sendall(message)
-               except Exception as e:
-                      print(f'clinet {addr} disconnected')
-                      pass 
+        thread.start()
+
+        def serve_client(addr, client_socket):
+            global frame
+            try:
+                print('Client {} connected!', format(addr))
+                if client_socket:
+                    while True:
+                        a = pickle.dumps(frame)
+                        message = struct.pack("Q", len(a))+a
+                        client_socket.sendall(message)
+            except Exception as e:
+                print(f'clinet {addr} disconnected')
+                pass
         for r in count(0):
-                client_socket,addr = server_socket.accept() 
-                print(addr)
-                thread = threading.Thread(target=serve_client, args=(addr,client_socket))
-                thread.start()              
-                print("total clients ",threading.activeCount() - 2)  
-    def Camera_QR_cache(self,cam_num,display,cache_ip_host,port,message_ip_address,port_message):
-                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                host_ip = str(cache_ip_host)
-                client_socket.connect((host_ip,port))
-                data = b""
-                payload_size = struct.calcsize("Q")
-                for r in count(0):
-                       while len(data) < payload_size: 
-                               packet = client_socket.recv(4*1024) 
-                               if not packet: break 
-                               data += packet 
-                       packed_msg_size = data[:payload_size]
-                       data = data[payload_size:]
-                       msg_size = struct.unpack("Q", packed_msg_size)[0] 
-                       while len(data) < msg_size: 
-                              data += client_socket.recv(4*1024) 
-                       frame_data = data[:msg_size]
-                       data = data[msg_size:]
-                       frame = pickle.loads(frame_data)
-                       #Adding image processing algorithm here 
-                       Image_0 = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                       try:
-                                barcodes_0 = pyzbar.decode(Image_0)
-                                print(barcodes_0)
-                                for barcode_0 in barcodes_0:
-                                        (x, y, w, h) = barcode_0.rect
-                                        cv2.rectangle(Image_0, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                                        barcodeData_0 = barcode_0.data.decode('utf-8')
-                                        barcodeType_0 = barcode_0.type
-                                        text_0= '{} {}'.format(barcodeData_0, barcodeType_0)
-                                print('Text reading from qr code',text_0)
-                                print('Coordinate ',text_0,x,y)
-                                global message_data;message_data = {'Message':text_0,'X':x,'Y':y}
-                                print('from message ',message_data)
-                                QR = Internal_Publish_subscriber()
-                                QR.Publisher_dict(message_ip_address,message_data,port_message) # using different ip address to sending the data to subscriber node 
-                       except:
-                                print('No QRcode detected!') 
-                       if display == 1: 
-                              cv2.imshow("Reaceiving video from camera "+str(cam_num),Image_0)
-                              
-                       key = cv2.waitKey(1) & 0xFF 
-                       if key == ord('q'): 
-                              break 
-                client_socket.close()         
-    #Face_recognition cache             
-    def Face_recog_cache(self,cam_num,path_data,display,cache_ip_host,port,message_ip_address,port_message):
-              
+            client_socket, addr = server_socket.accept()
+            print(addr)
+            thread = threading.Thread(
+                target=serve_client, args=(addr, client_socket))
+            thread.start()
+            print("total clients ", threading.activeCount() - 2)
+
+    def Camera_QR_cache(self, cam_num, display, cache_ip_host, port, message_ip_address, port_message):
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        host_ip = str(cache_ip_host)
+        client_socket.connect((host_ip, port))
+        data = b""
+        payload_size = struct.calcsize("Q")
+        for r in count(0):
+            while len(data) < payload_size:
+                packet = client_socket.recv(4*1024)
+                if not packet:
+                    break
+                data += packet
+            packed_msg_size = data[:payload_size]
+            data = data[payload_size:]
+            msg_size = struct.unpack("Q", packed_msg_size)[0]
+            while len(data) < msg_size:
+                data += client_socket.recv(4*1024)
+            frame_data = data[:msg_size]
+            data = data[msg_size:]
+            frame = pickle.loads(frame_data)
+            # Adding image processing algorithm here
+            Image_0 = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            try:
+                barcodes_0 = pyzbar.decode(Image_0)
+                print(barcodes_0)
+                for barcode_0 in barcodes_0:
+                    (x, y, w, h) = barcode_0.rect
+                    cv2.rectangle(Image_0, (x, y),
+                                  (x + w, y + h), (0, 0, 255), 2)
+                    barcodeData_0 = barcode_0.data.decode('utf-8')
+                    barcodeType_0 = barcode_0.type
+                    text_0 = '{} {}'.format(barcodeData_0, barcodeType_0)
+                print('Text reading from qr code', text_0)
+                print('Coordinate ', text_0, x, y)
+                global message_data
+                message_data = {'Message': text_0, 'X': x, 'Y': y}
+                print('from message ', message_data)
+                QR = Internal_Publish_subscriber()
+                # using different ip address to sending the data to subscriber node
+                QR.Publisher_dict(message_ip_address,
+                                  message_data, port_message)
+            except:
+                print('No QRcode detected!')
+            if display == 1:
+                cv2.imshow("Reaceiving video from camera " +
+                           str(cam_num), Image_0)
+
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
+                break
+        client_socket.close()
+    # Face_recognition cache
+
+    def Face_recog_cache(self, cam_num, path_data, display, cache_ip_host, port, message_ip_address, port_message):
+
         # Getting the file from directoty
         path = '/home/'+str(user)+"/"+str(path_data)
         try:
@@ -757,25 +771,26 @@ class Visual_Cam_optic(object):
         process_this_frame = True
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         host_ip = str(cache_ip_host)
-        client_socket.connect((host_ip,port))
+        client_socket.connect((host_ip, port))
         data = b""
         payload_size = struct.calcsize("Q")
         for r in count(0):
-                       while len(data) < payload_size: 
-                               packet = client_socket.recv(4*1024) 
-                               if not packet: break 
-                               data += packet 
-                       packed_msg_size = data[:payload_size]
-                       data = data[payload_size:]
-                       msg_size = struct.unpack("Q", packed_msg_size)[0] 
-                       while len(data) < msg_size: 
-                              data += client_socket.recv(4*1024) 
-                       frame_data = data[:msg_size]
-                       data = data[msg_size:]
-                       frame = pickle.loads(frame_data) 
-                       print(frame)
-                       #Face _recognition algorithm here 
-                       '''
+            while len(data) < payload_size:
+                packet = client_socket.recv(4*1024)
+                if not packet:
+                    break
+                data += packet
+            packed_msg_size = data[:payload_size]
+            data = data[payload_size:]
+            msg_size = struct.unpack("Q", packed_msg_size)[0]
+            while len(data) < msg_size:
+                data += client_socket.recv(4*1024)
+            frame_data = data[:msg_size]
+            data = data[msg_size:]
+            frame = pickle.loads(frame_data)
+            print(frame)
+            # Face _recognition algorithm here
+            '''
                        small_frame_0 = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
                        rgb_small_frame_0 = small_frame_0[:, :, ::-1]
                        if process_this_frame:
@@ -804,14 +819,14 @@ class Visual_Cam_optic(object):
                                          Fr_0.Publisher_dict(str(message_ip_address),face_message,port_message)
                                          cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
                         '''
-                       if display == 1: 
-                                cv2.imshow("Reaceiving video from camera "+str(cam_num),frame)
-                                    
-                       key = cv2.waitKey(1) & 0xFF 
-                       if key == ord('q'): 
-                              break 
-        client_socket.close()   
-                 
+            if display == 1:
+                cv2.imshow("Reaceiving video from camera "+str(cam_num), frame)
+
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
+                break
+        client_socket.close()
+
     # Getting the raw camera image
     def Camera_QR(self, cam_num, Buffers, portdata, port_message, ip_number):
         # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -942,7 +957,7 @@ class Visual_Cam_optic(object):
         exec("fps_"+str(cam_num)+",st_"+str(cam_num)+",frames_to_count_" +
              str(cam_num)+",cnt_"+str(cam_num)+" = (0,0,20,0)")
         # Start the loop of frame rate read
-        
+
         exec("for r_"+str(cam_num)+" in count(0):"+"\n\t\tpacket_"+str(cam_num)+",_"+str(cam_num)+" = client_socket_"+str(cam_num)+".recvfrom(BUFF_SIZE_"+str(cam_num)+")"+"\n\t\tdata_"+str(cam_num)+" = base64.b64decode(packet_" +
              str(cam_num)+",' /')"+"\n\t\tnpdata_"+str(cam_num)+" = np.fromstring(data_"+str(cam_num)+",dtype=np.uint8)"+"\n\t\tframe_"+str(cam_num)+" = cv2.imdecode(npdata_"+str(cam_num)+",1)"+"\n\t\tprint(frame_"+str(cam_num)+")")
 
@@ -1214,21 +1229,28 @@ class Navigation_sensors(object):
 
     def Audio_navigation(self):
         pass
-#Getting the Multiple node logic function to working at the control multi communication level 
-class Multiple_node_request_logic(): # This function can be using the url and ip both http and https request 
-        
-          def Multi_node_post_resq(self,message,local_ip,port,node_name):
-                    res = requests.post(local_ip+":"+str(port)+"/"+node_name,json=message) # Getting the node request post 
-                    return res.json() # Getting the json return data from the request port multinode logic 
+# Getting the Multiple node logic function to working at the control multi communication level
 
-          def Multi_node_get_resq(self,local_ip,port,node_name):
-                     get_res= requests.get(local_ip+":"+str(port)+"/"+node_name)          
-                     return get_res.json() # Getting the raw json to transfer the data of all post into the system 
-          def Multi_node_get_server(self,local_ip,port,get_func):
-                     get_res = equests.get(local_ip+":"+str(port)+"/"+get_func)
-                     return get_res.json()                                           
+
+class Multiple_node_request_logic():  # This function can be using the url and ip both http and https request
+
+    def Multi_node_post_resq(self, message, local_ip, port, node_name):
+        # Getting the node request post
+        res = requests.post(local_ip+":"+str(port)+"/"+node_name, json=message)
+        return res.json()  # Getting the json return data from the request port multinode logic
+
+    def Multi_node_get_resq(self, local_ip, port, node_name):
+        get_res = requests.get(local_ip+":"+str(port)+"/"+node_name)
+        # Getting the raw json to transfer the data of all post into the system
+        return get_res.json()
+
+    def Multi_node_get_server(self, local_ip, port, get_func):
+        get_res = equests.get(local_ip+":"+str(port)+"/"+get_func)
+        return get_res.json()
 
 # This can be using with the multiple array of chemical sensor,Force sensor,Pressure sensor,
+
+
 class Tactile_sensor(object):
     # Input sensor list with tuple
     # This array sensor can be streaming over multicache server and the frame data streaming will be process by the other image processing algorithm
@@ -1330,16 +1352,23 @@ def Camera_multi_cache(cam_num, ip_address, port, Width):
     cache_server = Visual_Cam_optic()
     cache_server.Multifunctional_camera(cam_num, ip_address, port, Width)
 
-def Cache_server(server_ip_address,cache_ip_host,port): 
-       multicache_server = Visual_Cam_optic()
-       multicache_server.Cache_camera_server(server_ip_address,cache_ip_host,port)
-def Camera_Qr_cache(cam_num,display,cache_ip_host,port,message_ip_address,port_message):
-       qr_cache = Visual_Cam_optic() 
-       qr_cache.Camera_QR_cache(cam_num,display,cache_ip_host,port,message_ip_address,port_message)
 
-def Face_cache(cam_num,path_data,display,cache_ip_host,port,message_ip_address,port_message):
-       Face_rec_cache = Visual_Cam_optic() 
-       Face_rec_cache.Face_recog_cache(cam_num,path_data,display,cache_ip_host,port,message_ip_address,port_message)
+def Cache_server(server_ip_address, cache_ip_host, port):
+    multicache_server = Visual_Cam_optic()
+    multicache_server.Cache_camera_server(
+        server_ip_address, cache_ip_host, port)
+
+
+def Camera_Qr_cache(cam_num, display, cache_ip_host, port, message_ip_address, port_message):
+    qr_cache = Visual_Cam_optic()
+    qr_cache.Camera_QR_cache(
+        cam_num, display, cache_ip_host, port, message_ip_address, port_message)
+
+
+def Face_cache(cam_num, path_data, display, cache_ip_host, port, message_ip_address, port_message):
+    Face_rec_cache = Visual_Cam_optic()
+    Face_rec_cache.Face_recog_cache(
+        cam_num, path_data, display, cache_ip_host, port, message_ip_address, port_message)
 
 
 def Face_recognition(path_data, display, ip, port, title_name, cam_num, Buffers, portdata, ip_number):
@@ -1438,18 +1467,24 @@ def Create_i2c_Servo(servo_num, servo_name, angle, pin):
              str(servo_name)+"',"+str(angle)+","+str(pin)+")")
     except:
         print("Checking your variables and pins data input")
-def Create_serial_Servo(servo_number,servo_name,mcu_number,gpio):
-    
-             Servo_motor = Action_control()
-             Servo_motor.Serial_Servo_motor(servo_number,servo_name,mcu_number,gpio)        
-     
-def Create_Servo_motor(mcu_number,servo_number,angle): 
-           servo_motor_write = Action_control() 
-           servo_motor_write.Serial_servo_control(mcu_number,servo_number,angle)
-           
-def Stepper_serial_gcode(stepper_num, serialdev,serial_com, g_code):
+
+
+def Create_serial_Servo(servo_number, servo_name, mcu_number, gpio):
+
+    Servo_motor = Action_control()
+    Servo_motor.Serial_Servo_motor(servo_number, servo_name, mcu_number, gpio)
+
+
+def Create_Servo_motor(mcu_number, servo_number, angle):
+    servo_motor_write = Action_control()
+    servo_motor_write.Serial_servo_control(mcu_number, servo_number, angle)
+
+
+def Stepper_serial_gcode(stepper_num, serialdev, serial_com, g_code):
     stepper_node = Action_control()
-    stepper_node.Serial_stepper_driver(stepper_num,serialdev,serial_com,g_code)
+    stepper_node.Serial_stepper_driver(
+        stepper_num, serialdev, serial_com, g_code)
+
 
 def microcontroller_info_dat(mcu_code_name):
     exec("mcu_"+str(mcu_code_name)+" = Microcontroller_pins()")
@@ -1458,17 +1493,22 @@ def microcontroller_info_dat(mcu_code_name):
     return data_mcu
 
 # Non execution pub node
+
+
 def Create_sub_node_string(ip, buffer_size, port):
-         node_sub_string = Internal_Publish_subscriber() 
-         node_sub_string.Subscriber_string(ip, buffer_size, port)
+    node_sub_string = Internal_Publish_subscriber()
+    node_sub_string.Subscriber_string(ip, buffer_size, port)
+
+
 def Camera_pub_node(cam_num, buffers, port, ip_number):  # running all theses in exec
 
     exec("cam_"+str(cam_num)+" = Visual_Cam_optic()")
     exec("cam_"+str(cam_num)+".Camera_raw("+str(cam_num)+"," +
          str(buffers)+","+str(port)+",'"+str(ip_number)+"')")
 
-def Camera_sub_node(cam_num, Buffers, portdata, ip_host,ip_message,port_message):
-    exec("cam_"+str(cam_num)+" = Visual_Cam_optic()") 
+
+def Camera_sub_node(cam_num, Buffers, portdata, ip_host, ip_message, port_message):
+    exec("cam_"+str(cam_num)+" = Visual_Cam_optic()")
     exec("cam_"+str(cam_num)+".Camera_subscriber("+str(cam_num)+"," +
          str(Buffers)+","+str(portdata)+",'"+str(ip_host)+"','"+str(ip_message)+"',"+str(port_message)+")")
 
@@ -1526,30 +1566,50 @@ def GPRS_communication_system(sim800l, command_input, ip, port):
 def Location_cellular_network(sim800l, ip, port):
     GPRS_loc = Cellular_networking_com()
     GPRS_loc.Location_cellular_network(sim800l, ip, port)
+
+
 def Lidar_publisher():
-     pass 
+    pass
+
+
 def Skeletal_detect_cam():
-    pass 
+    pass
+
+
 def Body_detect_cam():
-    pass     
-def Multi_node_logic(local_ip,port,get_func):
+    pass
+
+
+def Multi_node_logic(local_ip, port, get_func):
     get_res_func = Multiple_node_request_logic()
-    global data_out;data_out = get_res_func.Multi_node_get_server(local_ip,port,get_func)
+    global data_out
+    data_out = get_res_func.Multi_node_get_server(local_ip, port, get_func)
     return data_out
-def Multiplenode_post_logic(message,local_ip,port,node_name): # Getting the non statement if not found any lib   
+
+
+# Getting the non statement if not found any lib
+def Multiplenode_post_logic(message, local_ip, port, node_name):
     post_logic = Multiple_node_request_logic()
-    global data_out;data_out = post_logic.Multi_node_post_resq(message,local_ip,port,node_name)  
+    global data_out
+    data_out = post_logic.Multi_node_post_resq(
+        message, local_ip, port, node_name)
     return data_out
-def Multiplenode_get_logic(local_ip,port,node_name):
-    get_logic = Multiple_node_request_logic() 
-    global data_out;data_out = get_logic.Multi_node_get_resq(local_ip,port,node_name) 
+
+
+def Multiplenode_get_logic(local_ip, port, node_name):
+    get_logic = Multiple_node_request_logic()
+    global data_out
+    data_out = get_logic.Multi_node_get_resq(local_ip, port, node_name)
     return data_out
-     
+
 
 def OCR_code_detect():
-     pass 
+    pass
+
+
 def NLP_language():
-     pass   
+    pass
+
 
 def mcu1():
     mcu_data = "STM32F103CBTx"
