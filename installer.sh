@@ -49,7 +49,6 @@ ${NC}"
 
 # force installer to stop and remove all possible generated file
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-finish = false
 Stop() {
        echo -e "${Yellow}
 ======================================================================================
@@ -57,7 +56,6 @@ Stop() {
        sudo rm -r ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
        exit 0 
 }
-trap Stop ERR
 trap Stop INT
 
 # coppy roboreactor files to final dir
