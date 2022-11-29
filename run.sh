@@ -53,14 +53,14 @@ Stop() {
        echo -e "${Yellow}
 ======================================================================================
        ${NC}"
-       sudo rm -r ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
+       sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
        exit 0 
 }
 trap Stop INT
 
 # coppy roboreactor files to final dir
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-sudo rm -r ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
+sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
 for dir in \
         "$PWD/Face_db/" \
         "$PWD/Printrun/" \
@@ -85,8 +85,8 @@ please download it from your project page
     Stop
 fi
 mkdir -p  ~/
+sudo cp data_token_secret.json ./RoboreactorGenFlow/data_token_secret.json
 sudo cp -r Face_db/ Printrun/ Roboreactor_Gen_config/ RoboreactorGenFlow/ Roboreactor_library/ Roboreactor_projects/ ~/
-sudo cp data_token_secret.json ~/RoboreactorGenFlow/data_token_secret.json
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 echo 'Initiate the roboreactor webclient '
 cd ~/RoboreactorGenFlow
