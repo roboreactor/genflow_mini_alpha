@@ -47,7 +47,7 @@ echo -e "${Yellow}
 ======================================================================================
 ${NC}"
 
-# force installer to stop and remove all possible generated file
+# keyboardinterrupt force installer to stop and remove all possible generated file
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Stop() {
        echo -e "${Yellow}
@@ -60,7 +60,6 @@ trap Stop INT
 
 # coppy roboreactor files to final dir
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
 for dir in \
         "$PWD/Face_db/" \
         "$PWD/Printrun/" \
@@ -74,7 +73,10 @@ do
 ${dir} not found
 please re download it from https://roboreactor.com/download
        ${NC}"
-       Stop
+       echo -e "${Yellow}
+======================================================================================
+       ${NC}"
+       exit 0 
     fi
 done
 if [ ! -f data_token_secret.json ]; then
@@ -82,8 +84,12 @@ if [ ! -f data_token_secret.json ]; then
 ${PWD}/data_token_secret.json not found
 please download it from your project page
     ${NC}"
-    Stop
+    echo -e "${Yellow}
+======================================================================================
+    ${NC}"
+    exit 0 
 fi
+sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
 mkdir -p  ~/
 sudo cp data_token_secret.json ./RoboreactorGenFlow/data_token_secret.json
 sudo cp -r Face_db/ Printrun/ Roboreactor_Gen_config/ RoboreactorGenFlow/ Roboreactor_library/ Roboreactor_projects/ ~/
