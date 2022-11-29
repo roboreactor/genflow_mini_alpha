@@ -85,8 +85,10 @@ please download it from your project page
     Stop
 fi
 mkdir -p  ~/
+sudo cp data_token_secret.json ./RoboreactorGenFlow/data_token_secret.json
+
 sudo cp -r Face_db/ Printrun/ Roboreactor_Gen_config/ RoboreactorGenFlow/ Roboreactor_library/ Roboreactor_projects/ ~/
-sudo cp data_token_secret.json ~/RoboreactorGenFlow/data_token_secret.json
+
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 cd ~/
 sudo apt-get update && sudo apt-get upgrade -y # Upgrade the installer for the hardware lnux ubuntu 
