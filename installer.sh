@@ -190,6 +190,8 @@ sudo apt install build-essential cmake git pkg-config libgtk-3-dev \libavcodec-d
 #pkg-config --modversion opencv4
 python3 -c "import cv2; print(cv2.__version__)"
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+sudo apt-get install python3-smbus -y 
+sudo apt-get install python3-smbus2 -y 
 sudo apt-get install liburdfdom-tools -y
 sudo pip3 install pyzbar 
 #sudo pip3 install pyusb
