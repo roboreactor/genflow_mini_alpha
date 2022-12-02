@@ -47,17 +47,6 @@ echo -e "${Yellow}
 ======================================================================================
 ${NC}"
 
-# keyboardinterrupt force installer to stop and remove all possible generated file
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-Stop() {
-       echo -e "${Yellow}
-======================================================================================
-       ${NC}"
-       sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
-       exit 0 
-}
-trap Stop INT
-
 # coppy roboreactor files to final dir
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 for dir in \
