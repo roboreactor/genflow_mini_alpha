@@ -95,6 +95,25 @@ sudo cp data_token_secret.json ./RoboreactorGenFlow/data_token_secret.json
 sudo cp -r Face_db/ Printrun/ Roboreactor_Gen_config/ RoboreactorGenFlow/ Roboreactor_library/ Roboreactor_projects/ ~/
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 echo 'Initiate the roboreactor webclient '
+cd ~/Printrun
+sudo python3 -m pip install Cython
+sudo python3 setup.py build_ext --inplace
+sudo python3 setup.py install   # install click module at the python3 
+cd ~/
+#sudo apt-get install gparted -y 
+git clone https://github.com/uoip/g2opy
+cd ~/g2opy/
+mkdir build && cd build  
+sudo apt-get install build-essential cmake libeigen3-dev -y
+sudo apt-get install -y libqglviewer-dev-qt5 -y 
+#cmake configuretion 
+make -j8
+cd ~/
+git clone -b alsapatch https://github.com/gglockner/portaudio
+cd ~/portaudio
+./configure && make
+sudo make install
+sudo ldconfig
 cd ~/RoboreactorGenFlow
 sudo apt install python3.8-venv 
 sudo mkdir Face_db
