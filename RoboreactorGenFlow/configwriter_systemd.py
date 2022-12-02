@@ -28,7 +28,8 @@ Python_exc_path = "/bin/bash "
 Python_exc_path1 = "/usr/bin/python3 "
 Working_path = "/home/"+user+"/RoboreactorGenFlow"
 # Change username over the platform
-Execute_path = "/home/"+user+"/RoboreactorGenFlow/runsystem.sh"
+Execute_path = "/home/"+user+"/RoboreactorGenFlow/RoboreactorGenFlow.py"
+Execute_path2 = "/home/"+user+"/RoboreactorGenFlow/runsystem.sh" 
 Execute_path1 = "/home/"+user+"/RoboreactorGenFlow/request_config.py"
 config = configparser.ConfigParser()
 config.optionxform = str
@@ -78,7 +79,7 @@ if ar_kernel in list_support_os:
         config.set(settings[1], 'Type', 'idle')
         config.set(settings[1], 'WorkingDirectory', Working_path)
         config.set(settings[1], 'User', str(user))
-        config.set(settings[1], 'ExecStart', str(Python_exc_path+Execute_path))
+        config.set(settings[1], 'ExecStart', str(Python_exc_path+Execute_path2))
         config.set(settings[1], 'WantedBy', 'always')
         # Install
         config.add_section(settings[2])
