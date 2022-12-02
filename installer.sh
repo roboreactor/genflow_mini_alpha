@@ -391,4 +391,10 @@ ${NC}"
 sudo systemctl status RoboreactorGenFlow.service
 echo -e "${Yellow}
 ======================================================================================	
+${Green}
+Roboreactor genflow_mini_alpha token_service status 
+${NC}"
+sudo mv /home/$USER/genflow_mini_alpha/data_token_secret.json -t /home/$USER/genflow_mini_alpha/RoboreactorGenFlow/
+echo -e "${Yellow}
+======================================================================================
 ${NC}"
