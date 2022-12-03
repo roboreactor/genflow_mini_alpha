@@ -232,8 +232,8 @@ sudo pip3 install qrcode
 sudo pip3 install printrun 
 git clone https://github.com/kliment/Printrun.git
 cd ~/Printrun
-sudo python3 -m pip install Cython
-sudo python3 setup.py build_ext --inplace
+#sudo python3 -m pip install Cython
+#sudo python3 setup.py build_ext --inplace
 sudo python3 setup.py install   # install click module at the python3 
 cd ~/  # Get inside the printrun and install the file automatically  
 sudo apt-get install libportaudio2 -y 
