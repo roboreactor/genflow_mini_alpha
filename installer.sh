@@ -358,7 +358,7 @@ sudo apt-get  install python3-pyaudio -y
 sudo ufw disable
 echo 'Initiate the roboreactor webclient '
 cd ~/RoboreactorGenFlow
-sudo apt install python3.8-venv 
+sudo apt install python3.8-venv -y
 sudo mkdir Face_db
 sudo chmod -R 777 Face_db
 sudo mkdir RoboreactorGenFlow_env
@@ -394,7 +394,7 @@ echo -e "${Yellow}
 ${Green}
 Roboreactor genflow_mini_alpha token_service status 
 ${NC}"
-sudo mv /home/$USER/genflow_mini_alpha/data_token_secret.json -t /home/$USER/genflow_mini_alpha/RoboreactorGenFlow/
+sudo cp /home/$USER/genflow_mini_alpha/data_token_secret.json -t /home/$USER/genflow_mini_alpha/RoboreactorGenFlow/
 echo -e "${Yellow}
 ======================================================================================
 ${NC}"
