@@ -34,7 +34,6 @@ NC='\033[0m' 		     # No Color
 Red='\033[0;31m'          # Red
 Green='\033[0;32m'        # Green
 Yellow='\033[0;33m'       # Yellow
-Blue='\033[0;34m'         # Blue
 Cyan='\033[0;36m'         # Cyan
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -430,11 +429,11 @@ sudo chmod -R 777 /home/$USER/Roboreactor_projects
 
 echo -e "${Yellow}
 ======================================================================================	
-${Green}
+${Cyan}
 Remote request config service
 ${NC}"
 sudo systemctl status Remote_request_config.service
-echo -e "${Green}
+echo -e "${Cyan}
 Roboreactor genflow service
 ${NC}"
 sudo systemctl status RoboreactorGenFlow.service
