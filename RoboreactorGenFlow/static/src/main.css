@@ -1,7 +1,6 @@
 :root {
   --background-color: #212121;
   --border-color: #7fffd4;
-
   --background-box-title: #f7f7f7;
 }
 
@@ -27,32 +26,6 @@ body {
   text-decoration: none;
 }
 
-.menu {
-  position: absolute;
-  height: 40px;
-  display: block;
-  background: white;
-  width: 100%;
-}
-
-.menu ul {
-  padding: 0px;
-  margin: 0px;
-  line-height: 40px;
-}
-
-.menu ul li {
-  display: inline-block;
-  margin-left: 10px;
-  border-right: 0.5px solid var(--border-color);
-  padding-right: 10px;
-  line-height: 40px;
-  cursor: pointer;
-}
-
-.menu ul li.selected {
-  font-weight: bold;
-}
 .button {
   background-color: #4ea9ff;
   border: none;
@@ -68,7 +41,18 @@ body {
   cursor: pointer;
 }
 .button1 {
-  border-radius: 12px;
+  border: 1px solid #0e5ba3;
+  background: rgba(0, 0, 0, 0);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+.button2 {
+  border: 1px solid var(--border-color);
+  background: var(--background-box-title);
+  padding: 5px 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+  margin-bottom: 4px;
 }
 .btn-export {
   float: right;
@@ -89,7 +73,7 @@ body {
   float: right;
   position: absolute;
   top: 10px;
-  right: 85px;
+  right: 81px;
   color: white;
   font-weight: bold;
   border: 1px solid #96015b;
@@ -141,20 +125,10 @@ body {
   z-index: 5;
 }
 
-.bar-zoom svg {
-  cursor: pointer;
-  padding-left: 10px;
-}
-
-.bar-zoom svg:nth-child(1) {
-  padding-left: 0px;
-}
-
 #drawflow {
-  position: relative;
+  position: absolute;
   width: calc(100vw);
-  height: calc(100% - 50px);
-  top: 40px;
+  height: 100%;
   background: var(--background-color);
   background-size: 25px 25px;
   background-image: linear-gradient(to right, #414141 1px, transparent 1px),
@@ -165,8 +139,8 @@ body {
   background: rgba(0, 0, 0, 0);
   top: 0;
   left: 0;
-  margin-left: 5px;
-  margin-top: 45px;
+  margin-left: 10px;
+  margin-top: 5px;
   display: flex;
   flex-direction: column;
   height: fit-content(20em);
