@@ -80,7 +80,7 @@ Stop() {
        echo -e "${Yellow}
 ======================================================================================
        ${NC}"
-       sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
+       sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/get-pip.py ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ ~/g2opy/ ~/node_modules/ ~/portaudio/> /dev/null 2>&1
        exit 0 
 }
 trap Stop INT
@@ -121,7 +121,7 @@ fi
 # coppy roboreactor files to final dir
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
+sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/get-pip.py ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ ~/g2opy/ ~/node_modules/ ~/portaudio/> /dev/null 2>&1
 sudo mkdir -p  ~/
 sudo cp data_token_secret.json ./RoboreactorGenFlow/data_token_secret.json
 sudo cp -r Face_db/ Printrun/ Roboreactor_Gen_config/ RoboreactorGenFlow/ Roboreactor_library/ Roboreactor_projects/ ~/
