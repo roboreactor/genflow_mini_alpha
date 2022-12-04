@@ -75,6 +75,17 @@ echo -e "${Yellow}
 ======================================================================================
 ${NC}"
 
+# keyboardinterrupt force installer to stop and remove all possible generated file
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Stop() {
+       echo -e "${Yellow}
+======================================================================================
+       ${NC}"
+       sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
+       exit 0 
+}
+trap Stop INT
+
 # check require file
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -112,7 +123,7 @@ fi
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
-mkdir -p  ~/
+sudo mkdir -p  ~/
 sudo cp data_token_secret.json ./RoboreactorGenFlow/data_token_secret.json
 sudo cp -r Face_db/ Printrun/ Roboreactor_Gen_config/ RoboreactorGenFlow/ Roboreactor_library/ Roboreactor_projects/ ~/
 
@@ -412,16 +423,18 @@ echo 'Start the roboreactor webclient'
 sudo systemctl daemon-reload 
 sudo systemctl enable RoboreactorGenFlow.service
 sudo systemctl restart RoboreactorGenFlow.service 
-sudo systemctl status RoboreactorGenFlow.service
 sudo systemctl daemon-reload 
 sudo systemctl enable Remote_request_config.service
 sudo systemctl restart Remote_request_config.service
-sudo systemctl status Remote_request_config.service
 sudo chmod -R 777 /home/$USER/Roboreactor_projects 
 
 echo -e "${Yellow}
 ======================================================================================	
 ${Green}
+Remote request config service
+${NC}"
+sudo systemctl status Remote_request_config.service
+echo -e "${Green}
 Roboreactor genflow service
 ${NC}"
 sudo systemctl status RoboreactorGenFlow.service
