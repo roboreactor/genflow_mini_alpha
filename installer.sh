@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Instructions:
-# 1. call `chmod +x installer.sh`
-# 2. run script with sudo `sudo bash installer.sh`
+#  run script without sudo `bash installer.sh`
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -76,6 +75,7 @@ ${NC}"
 
 # keyboardinterrupt force installer to stop and remove all possible generated file
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 Stop() {
        echo -e "${Yellow}
 ======================================================================================
@@ -149,16 +149,22 @@ sudo apt-get install openssh-server -y
 echo "Install Htop"
 sudo apt-get install htop -y
 sudo apt-get install snap -y
+
 #sudo apt-get install arduino -y 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 echo "Install i2c data"
 sudo apt-get install i2c-tools -y 
 sudo pip3 install i2csense # install the i2 sensor library for upgrading the connection between the i2c sensors module
 echo "Install smbus for communication protocol"
+
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
        #GPU checker 
 sudo apt install mesa-utils -y 
+
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 sudo pip3 install smbus  #install the smbus protocol for communication with the sensors onboard on devices or robot automation 
 sudo pip3 install smbus2 #install the smbus2 protocol for the communication with the sensors onboard devices of the robot automation
 sudo pip3 install Adafruit-Blinka
@@ -172,7 +178,9 @@ sudo pip3 install streamlit
 sudo pip3 install Pynsq 
 sudo pip3 install python3-scapy 
 sudo apt-get install python3-pyaudio -y 
+
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 sudo pip3 install scipy 
 sudo pip3 install sklearn 
 sudo pip3 install matplotlib --upgrade 
@@ -202,7 +210,9 @@ sudo pip3 install scapy
 sudo pip3 install googlesearch-python
 sudo apt-get install dnsutils -y 
 sudo apt-get install v4l-utils -y 
+
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 #echo"Computer vision installation library install here" 
 sudo apt-get install python3-opencv -y 
 python3 -c "import cv2; print(cv2.__version__)"  # Show the verison of the opencv 
@@ -223,7 +233,9 @@ sudo apt install build-essential cmake git pkg-config libgtk-3-dev \libavcodec-d
 #sudo make install
 #pkg-config --modversion opencv4
 python3 -c "import cv2; print(cv2.__version__)"
+
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 sudo apt-get install python3-smbus -y 
 sudo apt-get install python3-smbus2 -y 
 sudo apt-get install liburdfdom-tools -y
@@ -402,6 +414,9 @@ sudo ldconfig
 cd ~/
 sudo apt-get  install python3-pyaudio -y 
 sudo ufw disable
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 echo 'Initiate the roboreactor webclient '
 cd ~/RoboreactorGenFlow
 sudo apt install python3.8-venv -y
@@ -426,6 +441,8 @@ sudo systemctl daemon-reload
 sudo systemctl enable Remote_request_config.service
 sudo systemctl restart Remote_request_config.service
 sudo chmod -R 777 /home/$USER/Roboreactor_projects 
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 echo -e "${Yellow}
 ======================================================================================	
