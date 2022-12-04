@@ -113,8 +113,8 @@ fi
 
 sudo rm -r ./RoboreactorGenFlow/data_token_secret.json ~/Face_db/ ~/Printrun/ ~/Roboreactor_Gen_config/ ~/RoboreactorGenFlow/ ~/Roboreactor_library/ ~/Roboreactor_projects/ > /dev/null 2>&1
 mkdir -p  ~/
-sudo cp data_token_secret.json ./RoboreactorGenFlow/data_token_secret.json
 sudo cp -r Face_db/ Printrun/ Roboreactor_Gen_config/ RoboreactorGenFlow/ Roboreactor_library/ Roboreactor_projects/ ~/
+sudo cp data_token_secret.json ./RoboreactorGenFlow/data_token_secret.json
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -427,10 +427,4 @@ ${NC}"
 sudo systemctl status RoboreactorGenFlow.service
 echo -e "${Yellow}
 ======================================================================================	
-${Green}
-Roboreactor genflow_mini_alpha token_service status 
-${NC}"
-sudo cp /home/$USER/genflow_mini_alpha/data_token_secret.json -t /home/$USER/genflow_mini_alpha/RoboreactorGenFlow/
-echo -e "${Yellow}
-======================================================================================
 ${NC}"
