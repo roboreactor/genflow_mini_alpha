@@ -1,4 +1,5 @@
 # import platform # This cannot be using inside the jetson Nano version
+import argparse
 from flask import Flask, request, render_template, url_for, redirect, jsonify
 from authenticationapi_request import Authentication_system
 import configparser
@@ -36,6 +37,22 @@ import socket
 import threading
 import os
 import requests  # Getting the micro controller data
+parser = argparse.ArgumentParser(
+    description='Script to run MobileNet-SSD object detection network ')
+parser.add_argument(
+    '--video', help="path to video file. If empty, camera's stream will be used")
+parser.add_argument('--prototxt', default='MobileNetSSD_deploy.prototxt',
+                    help='Path to text network file: '
+                    'MobileNetSSD_deploy.prototxt for Caffe model or '
+                    )
+parser.add_argument('--weights', default='MobileNetSSD_deploy.caffemodel',
+                    help='Path to weights: '
+                    'MobileNetSSD_deploy.caffemodel for Caffe model or '
+                    )
+parser.add_argument("--thr", default=0.2, type=float,
+                    help="confidence threshold to filter out weak detections")
+args = parser.parse_args()
+
 os_support = os.uname()  # using OS name instead
 # print(os_support)
 # Checking the kernel release for the
@@ -872,8 +889,8 @@ class Visual_Cam_optic(object):
              str(cam_num)+",' /')"+"\n\t\tnpdata_"+str(cam_num)+" = np.fromstring(data_"+str(cam_num)+",dtype=np.uint8)"+"\n\t\tframe_"+str(cam_num)+" = cv2.imdecode(npdata_"+str(cam_num)+",1)"+"\n\t\tprint(frame_"+str(cam_num)+")")
 
     # Getting the raw yolo image
-    def Camera_yolo(self, cam_num, Buffers, portdata, port_message, ip_number):
-
+    def Camera_yolo(self, cam_num, Buffers, portdata, port_message, ip_number, display_status, Object_labels, model_prototxt, model_caffe_weights):
+        exec("current_object_"+str(cam_num)+" = []")
         exec("BUFF_SIZE_"+str(cam_num)+" = "+str(Buffers))
         exec("client_socket_"+str(cam_num) +
              " = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)")
@@ -889,9 +906,12 @@ class Visual_Cam_optic(object):
              ",(host_ip_"+str(cam_num)+","+"port_"+str(cam_num)+"))")
         exec("fps_"+str(cam_num)+",st_"+str(cam_num)+",frames_to_count_" +
              str(cam_num)+",cnt_"+str(cam_num)+" = (0,0,20,0)")
+        exec("net_"+str(cam_num)+" = cv2.dnn.readNetFromCaffe('" +
+             model_prototxt+"','"+model_caffe_weights+"')")
+        classNames = Object_labels
         # Start the loop of frame rate read
-        exec("for r_"+str(cam_num)+" in count(0):"+"\n\t\tpacket_"+str(cam_num)+",_"+str(cam_num)+" = client_socket_"+str(cam_num)+".recvfrom(BUFF_SIZE_"+str(cam_num)+")"+"\n\t\tdata_"+str(cam_num)+" = base64.b64decode(packet_" +
-             str(cam_num)+",' /')"+"\n\t\tnpdata_"+str(cam_num)+" = np.fromstring(data_"+str(cam_num)+",dtype=np.uint8)"+"\n\t\tframe_"+str(cam_num)+" = cv2.imdecode(npdata_"+str(cam_num)+",1)"+"\n\t\tprint(frame_"+str(cam_num)+")")
+        exec("for r_"+str(cam_num)+" in count(0):"+"\n\t\tpacket_"+str(cam_num)+",_"+str(cam_num)+" = client_socket_"+str(cam_num)+".recvfrom(BUFF_SIZE_"+str(cam_num)+")"+"\n\t\tdata_"+str(cam_num)+" = base64.b64decode(packet_" + str(cam_num)+",' /')"+"\n\t\tnpdata_"+str(cam_num)+" = np.fromstring(data_"+str(cam_num)+",dtype=np.uint8)"+"\n\t\tframe_"+str(cam_num)+" = cv2.imdecode(npdata_"+str(cam_num)+",1)"+"\n\t\tprint(frame_"+str(cam_num)+")"+"\n\t\tframe_resized_"+str(cam_num)+" = cv2.resize(frame_"+str(cam_num)+",(300,300))"+"\n\t\tblob_"+str(cam_num)+" = cv2.dnn.blobFromImage(frame_resized_"+str(cam_num)+", 0.007843, (300, 300), (127.5, 127.5, 127.5), False)"+"\n\t\tnet_"+str(cam_num)+".setInput(blob_"+str(cam_num)+")"+"\n\t\tdetections_"+str(cam_num)+" = net_"+str(cam_num)+".forward()"+"\n\t\tcols_"+str(cam_num)+" = frame_resized_"+str(cam_num)+".shape[1]"+"\n\t\trows_"+str(cam_num)+" = frame_resized_"+str(cam_num)+".shape[0]"+"\n\t\tfor object_recognition_"+str(cam_num)+" in range(detections_"+str(cam_num)+".shape[2]):"+"\n\t\t\tconfidence_"+str(cam_num)+" = detections_"+str(cam_num)+"[0, 0, object_recognition_"+str(cam_num)+", 2]"+"\n\t\t\tif confidence_"+str(cam_num)+" > args.thr:"+"\n\t\t\t\tclass_id_"+str(cam_num)+" = int(detections_"+str(cam_num)+"[0, 0, object_recognition_"+str(cam_num)+", 1])"+"\n\t\t\t\txLeftBottom_"+str(cam_num)+" = int(detections_"+str(cam_num)+"[0, 0, object_recognition_"+str(cam_num)+", 3] * cols_"+str(cam_num)+")"+"\n\t\t\t\tyLeftBottom_"+str(cam_num)+" = int(detections_"+str(cam_num)+"[0, 0, object_recognition_"+str(cam_num)+", 4] * rows_"+str(cam_num)+")"+"\n\t\t\t\txRightTop_"+str(cam_num)+" = int(detections_"+str(cam_num)+"[0, 0,object_recognition_"+str(cam_num)+", 5] * cols_"+str(cam_num)+")"+"\n\t\t\t\tyRightTop_"+str(cam_num)+"  = int(detections_"+str(cam_num)+"[0, 0, object_recognition_"+str(cam_num)+", 6] * rows_"+str(cam_num)+")"+"\n\t\t\t\tcv2.rectangle(frame_"+str(cam_num)+",(xLeftBottom_"+str(cam_num)+",yLeftBottom_"+str(cam_num)+"),(xRightTop_"+str(cam_num)+",yRightTop_"+str(cam_num)+"),(0,255,0))"+"\n\t\t\t\tif class_id_"+str(cam_num)+" in classNames:"+"\n\t\t\t\t\tlabel_"+str(cam_num)+" = classNames"+"[class_id_"+str(
+            cam_num)+"] + ': ' + str(confidence_"+str(cam_num)+")"+"\n\t\t\t\t\tlabelSize_"+str(cam_num)+", baseLine_"+str(cam_num)+"= cv2.getTextSize(label_"+str(cam_num)+", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)"+"\n\t\t\t\t\tyLeftBottom_"+str(cam_num)+" = max(yLeftBottom_"+str(cam_num)+", labelSize_"+str(cam_num)+"[1])"+"\n\t\t\t\t\tcv2.rectangle(frame_"+str(cam_num)+", (xLeftBottom_"+str(cam_num)+", yLeftBottom_"+str(cam_num)+" - labelSize_"+str(cam_num)+"[1]),(xLeftBottom_"+str(cam_num)+" + labelSize_"+str(cam_num)+"[0], yLeftBottom_"+str(cam_num)+"+ baseLine_"+str(cam_num)+"),(255, 255, 255), cv2.FILLED)"+"\n\t\t\t\t\tcv2.putText(frame_"+str(cam_num)+", label_"+str(cam_num)+", (xLeftBottom_"+str(cam_num)+", yLeftBottom_"+str(cam_num)+"),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))"+"\n\t\t\t\t\tif label_"+str(cam_num)+".split(':')[0] not in current_object_"+str(cam_num)+":"+"\n\t\t\t\t\t\tprint(label_"+str(cam_num)+".split(':')[0],label_"+str(cam_num)+".split(':')[1],str(xLeftBottom_"+str(cam_num)+"),str(yLeftBottom_"+str(cam_num)+"))"+"\n\t\t\t\t\t\tcurrent_object_"+str(cam_num)+".append({'Object_name_"+str(cam_num)+"':label_"+str(cam_num)+".split(':')[0],'Confidence_"+str(cam_num)+"':label_"+str(cam_num)+".split(':')[1],'X_"+str(cam_num)+"':str(xLeftBottom_"+str(cam_num)+"),'Y_"+str(cam_num)+"':str(yLeftBottom_"+str(cam_num)+")})"+"\n\t\t\t\t\t\tprint(current_object_"+str(cam_num)+")"+"\n\t\t\t\t\t\tif len(current_object_"+str(cam_num)+") > 4:"+"\n\t\t\t\t\t\t\tcurrent_object_"+str(cam_num)+".clear()"+"\n\t\t\t\t\tdata_insert_"+str(cam_num)+" = {'Object_recognition_"+str(cam_num)+"':current_object_"+str(cam_num)+"}"+"\n\t\t\t\t\tObject_recognition_"+str(cam_num)+" = Internal_Publish_subscriber()"+"\n\t\t\t\t\tObject_recognition_"+str(cam_num)+".Publisher_dict('"+str(ip_number)+"',data_insert_"+str(cam_num)+","+str(port_message)+")"+"\n\t\t\t\tif '"+str(display_status)+"' != 'Non':"+"\n\t\t\t\t\tcv2.namedWindow('Object_recognition_"+str(cam_num)+"', cv2.WINDOW_NORMAL)"+"\n\t\t\t\t\tcv2.imshow('Object_recognition_"+str(cam_num)+"', frame_"+str(cam_num)+")"+"\n\t\t\t\tif '"+str(display_status)+"' == 'Non':"+"\n\t\t\t\t\tprint(frame_"+str(cam_num)+")")
 
     def Camera_Face_recognition(self, path_data, display, ip, port, title_name, cam_num, Buffers, portdata, ip_number):
 
@@ -1530,16 +1550,16 @@ def Camera_OCR_sub_node(cam_num, buffers, port, port_message, ip_number):
 
 
 def Camera_face_rec_sub_node(cam_num, buffers, port, port_message, ip_number):
-    exec("cam_"+str(cam_num)+" = Visual_Cam_optic()")
-    exec("cam_"+str(cam_num)+".Camera_Face_recongnition("+str(cam_num)+"," +
+    exec("cam_object_recog"+str(cam_num)+" = Visual_Cam_optic()")
+    exec("cam_object_recog"+str(cam_num)+".Camera_Face_recongnition("+str(cam_num)+"," +
          str(buffers)+","+str(port)+","+str(port_message)+",'"+str(ip_number)+"')")
 
 
-def Camera_yolo_sub_node(cam_num, buffers, port, port_message, ip_number):
+def Camera_yolo_sub_node(cam_num, Buffers, portdata, port_message, ip_number, display_status, object_labels, model_prototxt, model_caffe_weights):
 
-    exec("cam_"+str(cam_num)+" = Visual_Cam_optic()")
-    exec("cam_"+str(cam_num)+".Camera_yolo("+str(cam_num)+","+str(buffers) +
-         ","+str(port)+","+str(port_message)+",'"+str(ip_number)+"')")
+    cam_object_recog = Visual_Cam_optic()
+    cam_object_recog.Camera_yolo(cam_num, Buffers, portdata, port_message, ip_number,
+                                 display_status, object_labels, model_prototxt, model_caffe_weights)
 
 
 def get_datetime(ip, port):
