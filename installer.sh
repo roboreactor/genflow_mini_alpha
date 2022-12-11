@@ -130,6 +130,7 @@ sudo cp -r Face_db/ Printrun/ Roboreactor_Gen_config/ RoboreactorGenFlow/ Robore
 
 cd ~/
 sudo apt-get update && sudo apt-get upgrade -y # Upgrade the installer for the hardware lnux ubuntu 
+sudo apt-get install git -y 
 #sudo apt-get install python3-dev  -y 
 sudo apt install build-essential libssl-dev libffi-dev python3-setuptools -y 
 #Update and install python3 pip package 
