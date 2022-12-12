@@ -129,9 +129,9 @@ sudo cp -r Face_db/ Printrun/ Roboreactor_Gen_config/ RoboreactorGenFlow/ Robore
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 cd ~/
-sudo apt-get autoremove vlc -y 
-sudo apt-get purge vlc -y 
-sudo apt-get clean 
+#sudo apt-get autoremove vlc -y 
+#sudo apt-get purge vlc -y 
+#sudo apt-get clean 
 sudo apt-get update && sudo apt-get upgrade -y # Upgrade the installer for the hardware lnux ubuntu 
 sudo apt-get install git -y 
 #sudo apt-get install python3-dev  -y 
