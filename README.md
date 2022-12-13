@@ -1,13 +1,19 @@
-<center>
+<div align="center">
 <img width="30%" src="./RoboreactorGenFlow/static/favicon.png">
-<p style="font-size:6vw">Roboreactor</p>
+
+# Roboreactor Genflow Mini
+</div>
+<br>
+<div align="center">
 <img src="https://img.shields.io/github/downloads/roboreactor/genflow_mini_alpha/total"/>
 <a href="https://github.com/roboreactor/genflow_mini_alpha/issues"><img src="https://img.shields.io/github/issues/roboreactor/genflow_mini_alpha.svg"/></a>
 <a href="https://github.com/roboreactor/genflow_mini_alpha/releases"><img src="https://img.shields.io/github/v/release/roboreactor/genflow_mini_alpha?display_name=tag"/></a>
 <a href="./RoboreactorGenFlow/LICENSE"><img src="https://img.shields.io/badge/license-MIT-yellow.svg"></a>
 <img src="https://img.shields.io/badge/OS-linux-teal??style=flat&logo=Linux&logoColor=b0c0c0&labelColor=363D44" alt="Operating systems">
-
+</div>
 <br>
+
+<div align="center">
 
 [Website](https://roboreactor.com) •
 [Facebook](https://www.facebook.com/groups/496935899075410/) •
@@ -15,9 +21,8 @@
 [Installation](#installation) •
 [Credits](#credits)
 
-</center>
-
-# Genflow Mini
+</div>
+<br>
 
 Roboreactor Genflow Mini is the platform to help you build robotic and automation systems faster and with rich functionality to control general-purpose mobile computers to build robotics and automation systems at timeless and reduce complexity in tasks to help you build interesting and cool robotics and automation systems with Roboreactor node generator to generate the code from the website into the robot and automation system from anywhere in the world with no gap in development and
 we have a function to help you manage the components that you need for the project allow you to manage the components and code to match the functionality with the complete hardware you uploaded into the project and code that you generated on the website help you to manage the functionality of the system remotely via Roboreactor profile website and we have motion planning to connect with your robot remotely via our fast IoT system
