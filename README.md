@@ -1,8 +1,25 @@
-![](./RoboreactorGenFlow/static/favicon.png)
+<center>
+<img width="30%" src="./RoboreactorGenFlow/static/favicon.png">
+<p style="font-size:6vw">Roboreactor</p>
+<img src="https://img.shields.io/github/downloads/roboreactor/genflow_mini_alpha/total"/>
+<a href="https://github.com/roboreactor/genflow_mini_alpha/issues"><img src="https://img.shields.io/github/issues/roboreactor/genflow_mini_alpha.svg"/></a>
+<a href="https://github.com/roboreactor/genflow_mini_alpha/releases"><img src="https://img.shields.io/github/v/release/roboreactor/genflow_mini_alpha?display_name=tag"/></a>
+<a href="./RoboreactorGenFlow/LICENSE"><img src="https://img.shields.io/badge/license-MIT-yellow.svg"></a>
+<img src="https://img.shields.io/badge/OS-linux-teal??style=flat&logo=Linux&logoColor=b0c0c0&labelColor=363D44" alt="Operating systems">
 
-# Roboreactor Genflow Mini
+<br>
 
-Roboreactor is the platform to help you build robotic and automation systems faster and with rich functionality to control general-purpose mobile computers to build robotics and automation systems at timeless and reduce complexity in tasks to help you build interesting and cool robotics and automation systems with Roboreactor node generator to generate the code from the website into the robot and automation system from anywhere in the world with no gap in development and
+[Website](https://roboreactor.com) •
+[Facebook](https://www.facebook.com/groups/496935899075410/) •
+[Discord](https://discord.gg/guGDf24nrF) •
+[Installation](#installation) •
+[Credits](#credits)
+
+</center>
+
+# Genflow Mini
+
+Roboreactor Genflow Mini is the platform to help you build robotic and automation systems faster and with rich functionality to control general-purpose mobile computers to build robotics and automation systems at timeless and reduce complexity in tasks to help you build interesting and cool robotics and automation systems with Roboreactor node generator to generate the code from the website into the robot and automation system from anywhere in the world with no gap in development and
 we have a function to help you manage the components that you need for the project allow you to manage the components and code to match the functionality with the complete hardware you uploaded into the project and code that you generated on the website help you to manage the functionality of the system remotely via Roboreactor profile website and we have motion planning to connect with your robot remotely via our fast IoT system
 to allow you to control the robot motion system faster from anywhere allow you to run the robot under development with no gap of distances.
 The IoT on the Roboreactor allows you to manage data from the robot in real-time to help you collect and visualize data from the robot and pave the way to agile development for AI and digital twins on the robot.
@@ -10,11 +27,9 @@ from the IoT advantage, we can combine this function to allow you to use it to v
 Inside the node, functionality communicates with the UDP to send the data from one node to the other allowing you to replicate the function to control as many devices as you can in the local network
 increasing the possibility to do swarm and group tasks better inside the node that you replicate on each device.
 
-#
+# Installation
 
-## To begin using Genflow MINI start by installing it.
-
-> We strongly recommend you use a premium SD card from a reputable manufacturer such as Sandisk, Kingston or Samsung, using an “A1” (or better) grade SD card with more then 64GB capacity.
+> 💡 We strongly recommend you use a premium SD card from a reputable manufacturer such as Sandisk, Kingston or Samsung, using an “A1” (or better) grade SD card with more then 64GB capacity.
 
 ## Genflow Mini OS (for rpi, jetson)
 
@@ -63,7 +78,7 @@ git clone github.com/roboreactor/genflow-mini
 3. Copy the `data_token_secret_key.json` into your sbc `./genflow-mini` folder with [WinSCP](https://winscp.net/eng/download.php)
 4. Remote SSH into the sbc and run the following command to install genflow mini and wait until installation complete
 
-> this step might take up to 10 hours
+> 💡 this step might take up to 10 hours
 
 ```
 cd ~/genflow-mini
@@ -71,3 +86,13 @@ bash installer.sh
 ```
 
 5. your genflow page will available at `http://YourSbcIP:8000`
+
+<div align="right">[ <a href="#">☝️to top </a> ]</div>
+
+# Credits
+
+## inspired by
+
+- KevinOConnor [Klipper](https://github.com/Klipper3d/klipper)
+
+<div align="right">[ <a href="#">☝️to top </a> ]</div>
