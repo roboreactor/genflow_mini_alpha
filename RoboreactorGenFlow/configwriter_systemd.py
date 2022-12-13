@@ -148,6 +148,7 @@ if ar_kernel in list_support_os:
         configfile = open(Generate_path+"RoboreactorGenFlow.service", 'w')
         config.write(configfile)
 
+settings = ['Unit', 'Service', 'Install']
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 config1 = configparser.ConfigParser()
 config1.optionxform = str
