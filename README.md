@@ -14,8 +14,6 @@
 <a href="./RoboreactorGenFlow/LICENSE"><img src="https://img.shields.io/badge/license-MIT-yellow.svg"></a>
 <img src="https://img.shields.io/badge/OS-linux-teal??style=flat&logo=Linux&logoColor=b0c0c0&labelColor=363D44" alt="Operating systems">
 
-<br>
-
 [Website](https://roboreactor.com) •
 [Facebook](https://www.facebook.com/groups/496935899075410/) •
 [Discord](https://discord.gg/guGDf24nrF) •
@@ -32,6 +30,8 @@ The IoT on the Roboreactor allows you to manage data from the robot in real-time
 from the IoT advantage, we can combine this function to allow you to use it to visualize the data from Lidar to make the navigation system from a robot into the website.
 Inside the node, functionality communicates with the UDP to send the data from one node to the other allowing you to replicate the function to control as many devices as you can in the local network
 increasing the possibility to do swarm and group tasks better inside the node that you replicate on each device.
+
+<br>
 
 # Installation
 
@@ -93,7 +93,9 @@ bash installer.sh
 
 5. your genflow page will available at `http://YourSbcIP:8000`
 
-<div align="right">[ <a href="#">☝️to top </a> ]</div>
+<div align="right">[ <a href="#roboreactor-genflow-mini">☝️to top </a> ]</div>
+
+<br>
 
 # Credits
 
@@ -101,4 +103,4 @@ bash installer.sh
 
 - KevinOConnor [Klipper](https://github.com/Klipper3d/klipper)
 
-<div align="right">[ <a href="#">☝️to top </a> ]</div>
+<div align="right">[ <a href="#roboreactor-genflow-mini">☝️to top </a> ]</div>
