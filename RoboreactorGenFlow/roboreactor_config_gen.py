@@ -55,8 +55,8 @@ mem_multi_cache = [] #Mem multi cache node
 list_path_project = os.listdir(path_project_config)
 print("Project Path list",list_path_project)
 # Pre library element for setting the lib data config
-pre_lib = ['Create_node_pub','Create_node_sub','Camera_Qr_cache,Camera_multi_cache,Cache_server','Camera_pub_node','Face_recognition','Camera_QR_sub_node','OCR_code_detect','Skeletal_detect_cam','Body_detect_cam','Speaking_languages','Speech_recognition','NLP_language','Language_translator','Stepper_serial_gcode','BLDC_motor','Create_serial_motor,Create_serial_motor_logic','Create_i2c_Servo,Create_serial_Servo,Create_Servo_motor',"Serial_write_multipurpose,Serial_read_multipurpose",'Lidar_publisher','GPS_navigation','Sensor_array_input','Multi_node_logic']
-read_current_json = {"publish_data":"pub_node","subscriber_data":"sub_node","Multi_cache_server":"Multi_cache_server","Camera_raw":"Camera_raw","face_recog":"face_rec","QR_code_scanner_pub":"QR_code_scanner_pub","OCR_code_scanner_pub":"OCR_code","Skeletal_detection":"Skeletal_detection","Body_detection":"Body_detection","tts":"Text_to_speech","Speech_recognition":"Speech_recognition","NLP_languageprocessing":"NLP_language_processing","Translate_language":"Translage_language","Stepper_motor_control":"Stepper_motor","BLDC_motor":"BLDC_motor","DC_motor_control":"DC_motor","Servo_control":"Servo_motor","Serial_com_connect":"Serial_com","Lidar_publisher":"Lidar","GPS":"GPS","Sensor_array":"Sensor_Array","Multiple_node_logic":"Multiple_node_logic"}
+pre_lib = ['Create_node_pub','Create_node_sub','Camera_Qr_cache,Camera_multi_cache,Cache_server','Camera_pub_node','Face_recognition','Speaking_languages','Camera_yolo_pub_node','Camera_QR_sub_node','OCR_code_detect','Skeletal_detect_cam','Body_detect_cam','Speaking_languages','Speech_recognition','NLP_language','Language_translator','Stepper_serial_gcode','BLDC_motor','Create_serial_motor,Create_serial_motor_logic','Create_i2c_Servo,Create_serial_Servo,Create_Servo_motor',"Serial_write_multipurpose,Serial_read_multipurpose",'Lidar_publisher','GPS_navigation','Sensor_array_input','Multi_node_logic']
+read_current_json = {"publish_data":"pub_node","subscriber_data":"sub_node","Multi_cache_server":"Multi_cache_server","Multiple_node_logic":"Multiple_node_logic","Camera_raw":"Camera_raw","face_recog":"face_rec","Object_recognition_pub":"object_rec","QR_code_scanner_pub":"QR_code_scanner_pub","OCR_code_scanner_pub":"OCR_code","Skeletal_detection":"Skeletal_detection","Body_detection":"Body_detection","tts":"Text_to_speech","Speech_recognition":"Speech_recognition","NLP_languageprocessing":"NLP_language_processing","Translate_language":"Translage_language","Stepper_motor_control":"Stepper_motor","BLDC_motor":"BLDC_motor","DC_motor_control":"DC_motor","Servo_control":"Servo_motor","Serial_com_connect":"Serial_com","Lidar_publisher":"Lidar","GPS":"GPS","Sensor_array":"Sensor_Array","Multiple_node_logic":"Multiple_node_logic"}
 pre_lib_config = "import pyfirmata"+"\nimport serial"+"\nfrom itertools import count"+"\nimport configparser"+"\nimport threading"+"\nimport os"+"\nfrom roboreactmaster import " 
 
 matching_lib = {} # Getting the matching
@@ -352,6 +352,55 @@ class config_from_keys(object):
                     
              except: 
                   print("Configfile was created!") 
+       def object_rec(self,path_num,data_requested):
+             #Read path 
+             print(vision_path)
+             config = configparser.ConfigParser()    
+             config.read(vision_path+'object_recognition/object_recognition.cfg') 
+             list_data = os.listdir(vision_path)
+             print(list_data)
+             object_recog_buffer = config['object_recog']['object_recog_buffer'] # Getting the path data of the buffers          
+             model_prototxt_path = config['object_recog']['model_prototxt_path']  # Getting the face path 
+             model_caffe_path = config['object_recog']['model_caffe_path'] #Getting the caffe weights 
+             object_rec_label = config['object_recog']['object_rec_label'] # Getting the object_recognition label data 
+             message_ip = config['object_recog']['message_ip'] # getting the message ip 
+             display = config['object_recog']['display']
+             print(object_recog_buffer)
+             print(model_prototxt_path) 
+             print(model_caffe_path)
+             print(object_rec_label)
+             print(message_ip) 
+             print(display)
+
+             #Write path   
+             print("Start writing path....")
+             project_config_path = path_project_config+"/"+str(path_num)  # Config path for create config file in the project 
+             print("Created path",project_config_path) #show the writing path 
+             try:
+               os.mkdir(path_project_config+"/"+path_num,mode=0o777) # Making the directory 
+             except:
+                print("Directory was created!")
+             try:
+                  print("Start writing config file......")
+                  print(data_requested)
+                  config = configparser.ConfigParser() 
+                  config.add_section(str(path_num))
+                  config.set(str(path_num), 'path',project_config_path)
+                  config.set(str(path_num),"ip_address","'"+str(data_requested.split(",")[0])+"'")
+                  config.set(str(path_num),"camera_number",data_requested.split(",")[1])
+                  config.set(str(path_num),"port",data_requested.split(",")[2])  
+                  config.set(str(path_num),"port_message",data_requested.split(",")[3])
+                  config.set(str(path_num),"Buffer",object_recog_buffer)
+                  config.set(str(path_num),"model_prototxt_path",model_prototxt_path)
+                  config.set(str(path_num),"model_caffe_path",model_caffe_path) 
+                  config.set(str(path_num),"object_rec_label",object_rec_label)       
+                  config.set(str(path_num),"message_ip",message_ip)
+                  config.set(str(path_num),"display",display)
+                  configfile = open(project_config_path+"/"+str(path_num)+".cfg",'w')
+                  config.write(configfile)
+                    
+             except: 
+                  print("Configfile was created!")               
        def QR_code_scanner_pub(self,path_num,data_requested):
              #Read path 
              print(vision_path)
@@ -1000,6 +1049,43 @@ class code_from_json_gen(object):
              print(text_edit)
              project_writer.write(text_edit)
              mem_thread_function.append(str(path_num)+"_function")
+       def object_rec(self,path_num): 
+             #Read path
+             project_writer = open(path_project_config+"/"+path_project_config.split("/")[len(path_project_config.split("/"))-1]+".py",'a') # Createing the file with the preconfig library and control function  
+             list_file = os.listdir(path_project_config+"/"+path_num) # Getting the file name inside the directory 
+             config.read(path_project_config+"/"+path_num+"/"+list_file[0]) # getting the file inside to checking the directory config file 
+             path_config = config[path_num]['path']  # Getting the path num to collect the data path in the list 
+             camera_ip = config[path_num]['ip_address']        
+             camera_number = config[path_num]['camera_number']
+             port = config[path_num]['port'] 
+             port_message = config[path_num]['port_message']
+             camera_buffer = config[path_num]['buffer']
+             model_prototxt_path  = config[path_num]['model_prototxt_path']
+             model_caffe_path = config[path_num]['model_caffe_path']
+             object_label_path = config[path_num]['object_rec_label']
+             message_ip = config[path_num]['message_ip']
+             display = config[path_num]['display']
+             print("Code writer read config",path_config)         
+             print("Camera_ip",camera_ip)
+             print("Camera_port",port) 
+             print("Camera_number",camera_number)
+             print("Camera_buffer",camera_buffer)
+             print("Camera_port_message",port_message)
+             print("Cam_object_prototxt_path ",model_prototxt_path)
+             print("Cam_object_caffe_path",model_caffe_path)
+             print("Cam_object_label_path",object_label_path)
+             print("Camera_message_ip",message_ip)  
+             print("Camera_display_ip",display)
+             text_edit = "\ndef "+str(path_num)+"_function():"+"\n\t"+str(path_num+"_label")+" = "+str(object_label_path)+"\n\tCamera_yolo_pub_node("+str(camera_number)+","+str(camera_buffer)+","+str(port)+","+str(port_message)+","+str(camera_ip)+","+str(display)+","+str(path_num+"_label")+","+str(model_prototxt_path)+","+str(model_caffe_path)+")"
+             print(text_edit)
+             project_writer.write(text_edit)
+             mem_thread_function.append(str(path_num)+"_function")
+             path_model_dl = "/home/"+str(user)+"/Roboreactor_library/models"
+             list_mdl = os.listdir(path_model_dl)
+             print(list_mdl)
+             for modl in list_mdl:
+                    print(modl,path_model_dl+"/"+modl)
+                    os.system("sudo cp "+path_model_dl+"/"+modl+" -t "+path_project_config)       
        def QR_code_scanner_pub(self,path_num):
              #Read path
              project_writer = open(path_project_config+"/"+path_project_config.split("/")[len(path_project_config.split("/"))-1]+".py",'a') # Createing the file with the preconfig library and control function  
@@ -1269,17 +1355,17 @@ class Check_found_function(object):
          def Function_checker(self,input_function,path_num,sub_data): 
 
                #Iteratable function 
-               read_output_dat = {"publish_data":"pub_node","subscriber_data":"sub_node","Multi_cache_server":"Multi_cache_server","Camera_raw":"Camera_raw","face_recog":"face_rec","QR_code_scanner_pub":"QR_code_scanner_pub","Skeletal_detection":"Skeletal_detection","Body_detection":"Body_detection","tts":"Text_to_speech","Speech_recognition":"Speech_recognition","NLP_languageprocessing":"NLP_language_processing","Translate_language":"Translate_language","BLDC_motor":"Stepper_motor","DC_motor":"DC_motor","Servo_control":"Servo_motor","Serial_com_connect":"Serial_com","Lidar_publisher":"Lidar","GPS":"GPS","Sensor_array":"Sensor_Array","Multiple_node_logic":"Multiple_node_logic"}
+               read_output_dat = {"publish_data":"pub_node","subscriber_data":"sub_node","Multi_cache_server":"Multi_cache_server","Camera_raw":"Camera_raw","face_recog":"face_rec","Object_recognition_pub":"Object_rec","QR_code_scanner_pub":"QR_code_scanner_pub","Skeletal_detection":"Skeletal_detection","Body_detection":"Body_detection","tts":"Text_to_speech","Speech_recognition":"Speech_recognition","NLP_languageprocessing":"NLP_language_processing","Translate_language":"Translate_language","BLDC_motor":"Stepper_motor","DC_motor":"DC_motor","Servo_control":"Servo_motor","Serial_com_connect":"Serial_com","Lidar_publisher":"Lidar","GPS":"GPS","Sensor_array":"Sensor_Array","Multiple_node_logic":"Multiple_node_logic"}
                for r in range(0,len(list(read_current_json))):  # Adding the path num to the last parameter input from the loop 
                          #print('\nif input_function == "'+str(list(read_output_dat)[r])+'":'+"\n\t"+str(list(read_output_dat)[r])+" = config_from_keys()"+"\n\t"+str(list(read_output_dat)[r])+"."+str(read_output_dat.get(list(read_output_dat)[r]))+"('"+str(path_num)+"','"+str(sub_data)+"')")
                       try:    
                          exec('\nif input_function == "'+str(list(read_current_json)[r])+'":'+"\n\t"+str(list(read_current_json)[r])+" = config_from_keys()"+"\n\t"+str(list(read_current_json)[r])+"."+str(read_current_json.get(list(read_current_json)[r]))+"('"+str(path_num)+"','"+str(sub_data)+"')")  
-                         #print('\nif input_function == "'+str(list(read_output_dat)[r])+'":'+"\n\t"+str(list(read_output_dat)[r])+" = config_from_keys()"+"\n\t"+str(list(read_output_dat)[r])+"."+str(read_output_dat.get(list(read_output_dat)[r]))+"()")
+                         print('\nif input_function == "'+str(list(read_current_json)[r])+'":'+"\n\t"+str(list(read_current_json)[r])+" = config_from_keys()"+"\n\t"+str(list(read_current_json)[r])+"."+str(read_current_json.get(list(read_current_json)[r]))+"('"+str(path_num)+"','"+str(sub_data)+"')")
                       except:
                           print("Error function not found")
                           if input_function == "Multiple_node_logic":
-                                      Multiple_node_logic = config_from_keys()
-                                      Multiple_node_logic.Multiple_node_logic(path_num,json.dumps(sub_data))
+                                     Multiple_node_logic = config_from_keys()
+                                     Multiple_node_logic.Multiple_node_logic(path_num,json.dumps(sub_data))
 class Lib_generator_function(object):
 
      def intersection(self,lst1, lst2):
