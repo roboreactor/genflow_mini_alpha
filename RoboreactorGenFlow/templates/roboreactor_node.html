@@ -2636,7 +2636,7 @@ a {
                   var text_split = String(list_node[list_node.length-1]).split("_")
                   console.log(text_split);
                   if (String(Active_node[0]) != text_split[2]){                  
-                       node_name_values["face_recog_"+String(Active_node[0])] = String(input1)+","+String(input2)+","+String(input3) +","+String(input4)+","+String(option.text)
+                       node_name_values["face_recog_"+String(Active_node[0])] = String(input1)+","+String(input2)+","+String(input4) +","+String(input3)+","+String(option.text)
                        removed_node[String(Active_node[0])] = "face_recog_"+String(Active_node[0])
                        console.log(node_name_values);
                        console.log(removed_node);
@@ -2869,7 +2869,7 @@ a {
                                   var text_split = String(list_node[list_node.length-1]).split("_")
                                   console.log(text_split);
                                   if (String(Active_node[0]) != text_split[2]){                  
-                                             node_name_values["Object_recognition_pub_"+String(Active_node[0])] = String(input1)+","+String(input2)+","+String(input3)+","+String(option.text) 
+                                             node_name_values["Object_recognition_pub_"+String(Active_node[0])] = String(input1)+","+String(input2)+","+String(input3)+","+String(input4)+","+String(option.text) 
                                              removed_node[String(Active_node[0])] = "Object_recognition_pub_"+String(Active_node[0])
                                              console.log(node_name_values);
                                              console.log(removed_node); 
