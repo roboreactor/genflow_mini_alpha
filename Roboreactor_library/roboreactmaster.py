@@ -92,8 +92,7 @@ if str(ar_os) in compat_gpio_board:
 #    pass
 
 # The file need to be the static name inorder toload the file for authentication
-path_token_secret_key = "/home/" + \
-    str(os.listdir("/home/")[0])+"/RoboreactorGenFlow/"
+path_token_secret_key = "/home/"+str(os.listdir("/home/")[0])+"/RoboreactorGenFlow/"
 try:
     # Load the json data in local computer this file need to be export from the website
     Load_json = open(path_token_secret_key+"data_token_secret.json", 'r')
