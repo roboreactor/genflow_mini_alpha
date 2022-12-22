@@ -14,7 +14,7 @@ class Authentication_function(object):
                 #print(type(q_res[1]))
                
                 token_data = str(q_res[0])+'.'+str(token)
-                decode_Data = jwt.decode(q_res[0]+'.'+str(token),str(q_res[1]) ,algorithm=["HS512"])
+                decode_Data = jwt.decode(q_res[0]+'.'+str(token),str(q_res[1]) ,algorithms=["HS512"])
                 #print(decode_Data)
                 return decode_Data 
                                
