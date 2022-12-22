@@ -105,13 +105,10 @@ try:
 except:
     pass
 
-try:
-    # Getting the project data to verify the project data to post request sendback the data
-    Data = Authentication_system(
-        Account_data, Token_data, Secret_data, Project_data)
-    print(Data)  # Getting the email to verfy the data to send back to request the project and send back data to the user profile information
-except:
-    pass
+# Getting the project data to verify the project data to post request sendback the data
+Data = Authentication_system(Account_data, Token_data, Secret_data, Project_data)
+print(Data)  # Getting the email to verfy the data to send back to request the project and send back data to the user profile information
+
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # These function only able to enable from the singleboard computer
 #user = getpass.getuser()
