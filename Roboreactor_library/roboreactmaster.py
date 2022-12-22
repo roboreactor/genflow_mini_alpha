@@ -93,8 +93,7 @@ if str(ar_os) in compat_gpio_board:
 #    pass
 
 # The file need to be the static name inorder toload the file for authentication
-path_token_secret_key = "/home/" +str(os.listdir("/home/")[0])+"/RoboreactorGenFlow/"
-#print(path_token_secret_key)
+path_token_secret_key = "/home/"+str(os.listdir("/home/")[0])+"/RoboreactorGenFlow/"
 try:
     # Load the json data in local computer this file need to be export from the website
     Load_json = open(path_token_secret_key+"data_token_secret.json", 'r')
@@ -103,9 +102,10 @@ try:
     Account_data = OAuth.get('Account')
     Token_data = OAuth.get('Token')
     Secret_data = OAuth.get('Secret')
-    Project_data = OAuth.get('project_name')  # getting the project name    
+    Project_data = OAuth.get('project_name')  # getting the project name
 except:
     pass
+
 
 # Getting the project data to verify the project data to post request sendback the data
 Data = Authentication_system(Account_data, Token_data, Secret_data, Project_data)
@@ -1553,7 +1553,7 @@ def Camera_face_rec_sub_node(cam_num, buffers, port, port_message, ip_number):
          str(buffers)+","+str(port)+","+str(port_message)+",'"+str(ip_number)+"')")
 
 
-def Camera_yolo_sub_node(cam_num, Buffers, portdata, port_message, ip_number, display_status, object_labels, model_prototxt, model_caffe_weights):
+def Camera_yolo_pub_node(cam_num, Buffers, portdata, port_message, ip_number, display_status, object_labels, model_prototxt, model_caffe_weights):
 
     cam_object_recog = Visual_Cam_optic()
     cam_object_recog.Camera_yolo(cam_num, Buffers, portdata, port_message, ip_number,
