@@ -70,13 +70,14 @@ if str(ar_os) in compat_gpio_board:
     from adafruit_pca9685 import PCA9685
     from adafruit_motor import servo
     import busio
-    from board import SCL, SDA
-    if str(ar_os) == list_support_os[1]:
+    #print(ar_os,list_support_os[1])
+    if str(ar_os) != list_support_os[0]:
+        from board import SCL, SDA
         if 'Raspberrypi architecture' == os_service.json().get(str(ar_os)):  # Checking if the raspbe>
             import gpiozero
             from gpiozero import Robot, MCP3008
             from gpiozero import PhaseEnableMotor  # Getting the motor to working
-    i2c_bus = busio.I2C(SCL, SDA)
+        i2c_bus = busio.I2C(SCL, SDA)
 
 
 # Getting the analog value input from the library
@@ -92,7 +93,8 @@ if str(ar_os) in compat_gpio_board:
 #    pass
 
 # The file need to be the static name inorder toload the file for authentication
-path_token_secret_key = "/home/"+str(os.listdir("/home/")[0])+"/RoboreactorGenFlow/"
+path_token_secret_key = "/home/" +str(os.listdir("/home/")[0])+"/RoboreactorGenFlow/"
+#print(path_token_secret_key)
 try:
     # Load the json data in local computer this file need to be export from the website
     Load_json = open(path_token_secret_key+"data_token_secret.json", 'r')
@@ -101,7 +103,7 @@ try:
     Account_data = OAuth.get('Account')
     Token_data = OAuth.get('Token')
     Secret_data = OAuth.get('Secret')
-    Project_data = OAuth.get('project_name')  # getting the project name
+    Project_data = OAuth.get('project_name')  # getting the project name    
 except:
     pass
 
