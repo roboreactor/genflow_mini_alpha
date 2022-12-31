@@ -132,7 +132,7 @@ bash installer.sh
 </summary>
 
 - pub,sub,serial node channel and variable 📌chanapai
-- multi_node_logic one connection point 📌tanatorn
+- multi_node_logic one connection point ✅
 - combie body detection, obj recognition ,obj detection 📌chanapai
 - mcu config ,compile ,flash script 📌chanapai
 - cfg file to map mcu pin to pin name (mcu_1/pa11 : motor_a_dir)📌chanapai
