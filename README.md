@@ -109,6 +109,39 @@ bash installer.sh
 <div align="right">[ <a href="#roboreactor-genflow-mini">☝️to top </a> ]</div>
 <br>
 
+# Roadmap
+
+<details>
+<summary>
+
+## emoji note
+
+</summary>
+
+- 📌 dev soon
+- 🚀 under dev
+- ✅ done
+
+</details>
+
+<details>
+<summary>
+
+## todo list
+
+</summary>
+
+- pub,sub,serial node channel and variable 📌chanapai
+- multi_node_logic one connection point 📌tanatorn
+- combie body detection, obj recognition ,obj detection 📌chanapai
+- mcu config ,compile ,flash script 📌chanapai
+- cfg file to map mcu pin to pin name (mcu_1/pa11 : motor_a_dir)📌chanapai
+- add klipper feature 🚀chanapai
+- combie all motor to one motor node and use dropdown to select type 📌chanapai
+
+</details>
+<div align="right">[ <a href="#roboreactor-genflow-mini">☝️to top </a> ]</div>
+
 # Credits
 
 ## inspired by
