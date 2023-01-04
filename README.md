@@ -132,16 +132,15 @@ bash installer.sh
 </summary>
 
 - pub,sub,serial node channel and variable 📌chanapai
-- multi_node_logic one connection point ✅
 - RSSI and beacon indoor positioning system with more precise and flexible algorithm 📌chanapai
 - combie body detection, obj recognition ,obj detection 📌chanapai
-- mcu config ,compile ,flash script 📌chanapai
-- cfg file to map mcu pin to pin name (mcu_1/pa11 : motor_a_dir)📌chanapai
-- add klipper feature 🚀chanapai
+- mcu config ,compile ,flash script 📌tanatorn
+- cfg file to map mcu pin to pin name (mcu_1/pa11 : motor_a_dir)📌tanatorn
+- add klipper feature 📌tanatorn
 - combie all motor to one motor node and use dropdown to select type 📌chanapai
-- update manager
-- system loads (from jtop)
-- download log file
+- update manager 📌chanapai
+- system loads (from jtop) 📌tanatorn
+- download log file 📌chanapai
 </details>
 <div align="right">[ <a href="#roboreactor-genflow-mini">☝️to top </a> ]</div>
 
