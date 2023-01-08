@@ -144,6 +144,7 @@ bash installer.sh
 - download log file 📌chanapai
 - Motion system serial superposition serial problem 🚀chanapai 
 - UI update on the website 🚀chanapai   
+- Motion planing on the website 🚀chanapai
 </details>
 <div align="right">[ <a href="#roboreactor-genflow-mini">☝️to top </a> ]</div>
 
