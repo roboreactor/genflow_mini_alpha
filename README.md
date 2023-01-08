@@ -138,7 +138,7 @@ bash installer.sh
 - mcu config ,compile ,flash script 📌tanatorn
 - cfg file to map mcu pin to pin name (mcu_1/pa11 : motor_a_dir)📌tanatorn
 - add klipper feature 📌tanatorn
-- combie all motor to one motor node and use dropdown to select type 📌chanapai
+- combie all motor to one motor node and use dropdown to select type ✅ not change reason each one need specific communication and setting chanapai 
 - update manager 📌chanapai
 - system loads (from jtop) 📌tanatorn
 - download log file 📌chanapai
