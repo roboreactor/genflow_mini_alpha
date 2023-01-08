@@ -101,6 +101,7 @@ git clone https://github.com/roboreactor/genflow-mini
 ```
 cd ~/genflow-mini
 bash installer.sh
+
 ```
 
 5. Your genflow page will be available at `http://YourSbcIP:8000`
@@ -133,7 +134,7 @@ bash installer.sh
 
 - pub,sub,serial node channel and variable 📌chanapai
 - RSSI and beacon indoor positioning system with more precise and flexible algorithm 📌chanapai
-- combie body detection, obj recognition ,obj detection 📌chanapai
+- combie body detection, obj recognition ,obj detection ✅ chanapai
 - mcu config ,compile ,flash script 📌tanatorn
 - cfg file to map mcu pin to pin name (mcu_1/pa11 : motor_a_dir)📌tanatorn
 - add klipper feature 📌tanatorn
