@@ -142,6 +142,8 @@ bash installer.sh
 - update manager 🚀chanapai
 - system loads (from jtop) 📌tanatorn
 - download log file 📌chanapai
+- Motion system serial superposition serial problem 🚀chanapai 
+  
 </details>
 <div align="right">[ <a href="#roboreactor-genflow-mini">☝️to top </a> ]</div>
 
