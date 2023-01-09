@@ -2,6 +2,7 @@
   --background-color: #212121;
   --border-color: #7fffd4;
   --background-box-title: #f7f7f7;
+  --width__sidebar: 18em;
 }
 
 html,
@@ -27,7 +28,7 @@ body {
 }
 
 .button {
-  background-color: #4ea9ff;
+  background-color: #00BFFF;
   border: none;
   color: black;
   padding: 22px;
@@ -70,7 +71,7 @@ body {
   color: white;
   font-weight: bold;
   border: 1px solid #0e5ba3;
-  background: #4ea9ff;
+  background: #00BFFF;
   padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
@@ -89,7 +90,7 @@ body {
   color: white;
   font-weight: bold;
   border: 1px solid #96015b;
-  background: #e3195a;
+  background: #f0336f;
   padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
@@ -98,6 +99,25 @@ body {
 
 .btn-clear:active {
   background: rgb(176, 19, 69);
+}
+
+.sidebar-toggle {
+  float: left;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  color: white;
+  font-weight: bold;
+  border: 1px solid #0e5ba3;
+  background: #00BFFF;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.sidebar-toggle:active {
+  background: rgba(62, 135, 204);
 }
 
 .swal-wide {
@@ -185,14 +205,33 @@ body {
 }
 
 .sidebar {
+  position: absolute;
   background: rgba(0, 0, 0, 0);
   padding: 5px 10px;
-  top: -3px;
-  left: 1px;
-  height: calc(100% + 3px);
-  width: fit-content;
+  top: 38px;
+  left: -4px;
+  height: calc(100% - 38px);
+  width: var(--width__sidebar);
   position: fixed;
   overflow-x: scroll;
+  transition: .7s;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.example {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.sidebar.is-closed {
+  transform: translateX(calc(0em - var(--width__sidebar)));
 }
 
 *,
