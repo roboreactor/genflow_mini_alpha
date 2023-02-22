@@ -12,6 +12,14 @@ path_token = "/home/"+os.listdir("/home/")[0]+"/RoboreactorGenFlow/" # Getting t
 path_rlib = "/home/"+os.listdir("/home/")[0]+"/Roboreactor_library/"
 Current_device_data = {} 
 data_transfer_OS = {}
+Live_URL = "https://roboreactor.com"
+server_1 = "https://roboreactor.com/Joint_control_datas"
+server_joint = "https://roboreactor.com/package_iot_control"
+#Put this in the function of loop generator on and off function 
+mcus_pin_map = "https://raw.githubusercontent.com/KornbotDevUltimatorKraton/Microconroller_pin_map_database-/main/mcus_board_lists.json" # Re>
+Serial_separator = {} 
+Serial_datas = {} 
+mem_serial_name = [] 
 #Getting the operating system and machine data of the user
 os_platform = os.uname() # uname 
 
@@ -402,12 +410,13 @@ def upload_maneger():
         user = device_name
         res_update = requests.get("https://roboreactor.com/software_update")  # Update software from the request
         software_update = res_update.json().get(Account_data) # Getting the data of the request
+          
         if software_update !="None":
               if software_update == {}:
-                      print("No data inside the payload")
-                      
+                       print("No data inside the payload")
+                           
               if software_update !={}:
-                  
+                   
                       print("Data in payload update",software_update)
                       if software_update.get('upload') == "ON":
                                      data_soft = software_update.get("github") # Getting the github link data to run in the git clone update the new middleware   
@@ -439,6 +448,100 @@ def upload_maneger():
                      
     except:
           print("Error connecting server")
+def Joint_remote_control():
+      user = device_name
+      for i in count(0):
+             try:
+
+                  account_payload = {'email':Account_data} # Container account data 
+                  res = requests.post(Live_URL+"/run_joint",json=account_payload)
+                  extract_payload = res.json() # Get the extracted payload request from the account payload data 
+                  print(extract_payload)
+                                 
+                  #Check if the status on then get into the function to generate the code of the joint control generator 
+                  Status_data = extract_payload.get('status')
+                  print(Status_data)
+                  
+                  data_joint_update = {} 
+                  if Status_data == "ON":
+                       print("Status is now online now generating the code of the joint ....")
+                       print("Working on it right now!") 
+                       #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                       #Post request back to the server to update status offline
+                       extract_payload['status'] = "OFF"
+                       print("Updated status joint generator ", extract_payload)
+                       data_joint_update[Account_data] = extract_payload
+                       res = requests.get(Live_URL+"/Joint_data_request",json=data_joint_update)
+                       print(res.json()) 
+                       
+                       try:
+                           print("Removing old file....")
+                           os.remove("/home/"+user+"/Joint_remote_controller.py")
+                       except:
+                           print("File not found")           
+                       
+                       for i in range(0,2):       
+                             code_gens = open('/home/'+user+'/Joint_remote_controller.py','a')
+                             code_gens.write("import requests"+"\n"+"import pyfirmata"+"\nfrom itertools import count")
+                             code_gens.write("\ntry:")
+                             data_split = extract_payload
+                             project_name = list(data_split.get('data_joint'))[0]
+                             print("project_name ",project_name) # Project_name
+                             machine_name = list(data_split.get('data_joint').get(project_name))[0]
+                             print("Machine_name ",machine_name) # Machine_name
+                             data_joint_json = data_split.get('data_joint').get(project_name).get(machine_name)
+                             joint_list = list(data_joint_json)
+                             print("Data_update_joint_writer ",data_joint_json)
+                             for j in joint_list:
+                                          #print(data_joint_json.get(j)) 
+                                          #Generate the library of the python code 
+                                          serial_port = data_joint_json.get(j).get('Port_address')
+                                          Serial_separator[serial_port] = j 
+                                          #Check the serial device connection 
+                                          Serial_datas[j] = serial_port         
+                                          #Check type of motor 
+                                          #Check signal type control
+                              #append the list of the serial into the serial separator
+                             for s in list(Serial_separator):
+                                         code_gens.write("\n\thardware_"+s.split("/")[len(s.split("/"))-1]+" = pyfirmata.ArduinoMega('"+serial_port+"')")
+                                         mem_serial_name.append("hardware_"+s.split("/")[len(s.split("/"))-1])
+                             for hc in joint_list:
+                                      print(data_joint_json.get(hc))
+                                      joint_dats = data_joint_json.get(hc)
+                                      for ir in list(joint_dats):
+                                                print(hc,ir)
+                                                list_mcus_pack = ['mcus_code_number','mcus_families',hc+' communication','mcus_package','mcus_pins']
+                                                if ir == list_mcus_pack[0]:
+                                                             mcus_name = joint_dats.get(ir)+joint_dats.get('mcus_package')      
+                                                             mcus_fam = joint_dats.get('mcus_families')
+                                                             io_control = joint_dats.get('mcus_IO')
+                                                             mcus_pins = joint_dats.get('mcus_pins').get('pin_name')
+                                                             print(joint_dats.get('mcus_families'),mcus_name)                          
+                                                             #Get the name of the package                              
+                                                             res_map = requests.get(mcus_pin_map) 
+                                                             pin_map = res_map.json().get(mcus_fam).get(mcus_name)
+                                                             print(pin_map)
+                                                             print("Pin_from_mcus_map ",pin_map.get(mcus_pins))
+                                                             data_io_control = {'Servo_PWM_output':'s'}
+                                                             code_gens.write("\n"+"\t"+hc+"_servo = "+" hardware_"+Serial_datas[j].split("/")[len(s.split("/"))-1]+".get_pin('d:"+str(pin_map.get(mcus_pins))+":"+data_io_control.get(io_control)+"')")
+                             
+                             code_gens.write("\nexcept:"+"\n\t"+"print('Serial device not found')") 
+                             code_gens.write("\nfor r in count(0):")
+                             code_gens.write("\n\t\ttry:"+"\n\t\t\tres = requests.get('"+server_joint+"')"+"\n\t\t\tjoint_parameters = res.json()"+"\n\t\t\temail = list(joint_parameters)[0]"+"\n\t\t\tproject_name = list(joint_parameters.get(email))[0]"+"\n\t\t\tjoint_type = list(joint_parameters.get(email).get(project_name))[0]"+"\n\t\t\tjoint_motion = joint_parameters.get(email).get(project_name).get(joint_type)")
+                             for hc in joint_list:
+                                             code_gens.write("\n\t\t\t"+hc+" = joint_motion.get('"+hc+"')")
+                                             code_gens.write("\n\t\t\tprint('Joint "+hc+"',"+hc+",abs(float("+hc+")))")
+                                             code_gens.write("\n\t\t\tif float("+hc+") >= 0:"+"\n\t\t\t\t"+hc+"_servo.write(abs(float("+hc+")))")
+                                             code_gens.write("\n\t\t\tif float("+hc+") <= 0:"+"\n\t\t\t\t"+hc+"_servo.write(90+abs(float("+hc+")))")   
+                             code_gens.write("\n\t\texcept:"+"\n\t\t\t\t"+"print('Serial device not found')") 
+                             #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+                                                          
+                  if Status_data == "OFF":
+                             print("Status offline stop generating code")                                                                    
+                                         
+             except:
+                print("Server not found on the post request to the web services")  
+
 # Running multithread 
 t1 = threading.Thread(target=Main_request)
 t2 = threading.Thread(target=side_request) 
@@ -446,9 +549,11 @@ t3 = threading.Thread(target=Generate_request)
 t4 = threading.Thread(target=Restart_request)
 t5 = threading.Thread(target=Stop_request)
 t6 = threading.Thread(target=upload_maneger)
+t7 = threading.Thread(target=Joint_remote_control)
 t1.start()
 t2.start()
 t3.start()
 t4.start() 
 t5.start() 
 t6.start() 
+t7.start() 
