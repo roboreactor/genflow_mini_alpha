@@ -10,6 +10,7 @@ from itertools import count
 device_name = os.listdir("/home/")[0] # getting the device name data 
 path_token = "/home/"+os.listdir("/home/")[0]+"/RoboreactorGenFlow/" # Getting the path token data 
 path_rlib = "/home/"+os.listdir("/home/")[0]+"/Roboreactor_library/"
+path_project = "/home/"+os.listdir("/home/")[0]+"/Roboreactor_projects/"
 Current_device_data = {} 
 data_transfer_OS = {}
 Live_URL = "https://roboreactor.com"
@@ -453,11 +454,12 @@ def Joint_remote_control():
       for i in count(0):
              try:
 
-                  account_payload = {'email':Account_data} # Container account data 
-                  res = requests.post(Live_URL+"/run_joint",json=account_payload)
-                  extract_payload = res.json() # Get the extracted payload request from the account payload data 
-                  print(extract_payload)
-                                 
+               account_payload = {'email':Account_data} # Container account data 
+               res = requests.post(Live_URL+"/run_joint",json=account_payload)
+               extract_payload = res.json() # Get the extracted payload request from the account payload data 
+               print(extract_payload)
+               project_names_data = list(extract_payload.get('data_joint'))[0]               
+               if project_names_data in os.listdir(path_project): 
                   #Check if the status on then get into the function to generate the code of the joint control generator 
                   Status_data = extract_payload.get('status')
                   print(Status_data)
