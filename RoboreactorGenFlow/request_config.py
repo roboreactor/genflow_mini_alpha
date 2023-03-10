@@ -14,13 +14,25 @@ path_project = "/home/"+os.listdir("/home/")[0]+"/Roboreactor_projects/"
 Current_device_data = {} 
 data_transfer_OS = {}
 Live_URL = "https://roboreactor.com"
+#Live_URL = "http://192.168.50.201:5890"
 server_1 = "https://roboreactor.com/Joint_control_datas"
 server_joint = "https://roboreactor.com/package_iot_control"
 #Put this in the function of loop generator on and off function 
 mcus_pin_map = "https://raw.githubusercontent.com/KornbotDevUltimatorKraton/Microconroller_pin_map_database-/main/mcus_board_lists.json" # Re>
 Serial_separator = {} 
 Serial_datas = {} 
-mem_serial_name = [] 
+serial_separator = {} # Get the serial separator to separate the data of the serial type function 
+serial_list = {} 
+serial_group = {} #Get the serial json data of the group check list joint serial 
+Commu_check_data = {} # Get the communication type data 
+check_loop_joints = [] 
+check_same_IO = [] # Check GPIO is the same pin generated inside the loop or not 
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
+# SBC communication code 
+board_catg = {} # Get the board category data 
+#get the data of the joint function communication 
+sbc_communication = {} 
+data_io_control = {'Servo_PWM_output':'s','PWM_output':'p'} # Get the data IO output and input 
 #Getting the operating system and machine data of the user
 os_platform = os.uname() # uname 
 
@@ -449,98 +461,234 @@ def upload_maneger():
                      
     except:
           print("Error connecting server")
+def Turn_off_data(user,extract_data,data_joint_update,code_gens,Live_URL):
+          extract_data['status'] = "OFF"
+          print("Updated status joint generator ", extract_data)
+          data_joint_update[Account_data] = extract_data
+          res = requests.get(Live_URL+"/Joint_data_request",json=data_joint_update)
+          print(res.json())  
+          code_gens = open("/home/"+user+"/Joint_remote_controller.py",'a')   # Generate the code here running in the loop check when status is on                             
 def Joint_remote_control():
       user = device_name
       for i in count(0):
              try:
 
-               account_payload = {'email':Account_data} # Container account data 
-               res = requests.post(Live_URL+"/run_joint",json=account_payload)
-               extract_payload = res.json() # Get the extracted payload request from the account payload data 
-               print(extract_payload)
-               project_names_data = list(extract_payload.get('data_joint'))[0]               
-               if project_names_data in os.listdir(path_project): 
-                  #Check if the status on then get into the function to generate the code of the joint control generator 
-                  Status_data = extract_payload.get('status')
-                  print(Status_data)
-                  
-                  data_joint_update = {} 
-                  if Status_data == "ON":
-                       print("Status is now online now generating the code of the joint ....")
-                       print("Working on it right now!") 
-                       #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                       #Post request back to the server to update status offline
-                       extract_payload['status'] = "OFF"
-                       print("Updated status joint generator ", extract_payload)
-                       data_joint_update[Account_data] = extract_payload
-                       res = requests.get(Live_URL+"/Joint_data_request",json=data_joint_update)
-                       print(res.json()) 
-                       
+                   account_payload = {'email':Account_data} # Container account data 
+                   res = requests.post(Live_URL+"/run_joint",json=account_payload)
+                   extract_data = res.json() # Get the extracted payload request from the account payload data 
+                   print(extract_data)
+                   project_name = list(extract_data.get('data_joint'))[0]               
+                   host_name = list(extract_data.get('data_joint').get(project_name))[0] 
+                   #print(project_name,host_name)
+                   joint_dats = extract_data.get('data_joint').get(project_name).get(host_name) 
+                   #print(joint_dats) # Get the internal joint data request
+                   #Check status of the statement on the payload to start on and off 
+                   #Record the json data back to the user account 
+                   data_joint_update = {} #Keep the data joint update 
+                   if extract_data['status'] == "ON":
+                       #Working on something while status on 
+                       print("Working on the code generator now generating code")
                        try:
                            print("Removing old file....")
                            os.remove("/home/"+user+"/Joint_remote_controller.py")
                        except:
-                           print("File not found")           
+                           print("File not found") 
+                           
+                       print("Now generating the code for joint remote control! ...")
+                       #code_gens = open("/home/"+user+"/urdf_creator_template/Joint_remote_controller.py",'a')
+                       #code_gens.write("import os"+"\nimport json"+"\nimport requests"+"\nimport serial"+"\nimport pyfirmata")
+                       #code_gens = open("/home/"+user+"/urdf_creator_template/Joint_remote_controller.py",'a')
+                       #First task get the serial USB port 
                        
-                       for i in range(0,2):       
-                             code_gens = open('/home/'+user+'/Joint_remote_controller.py','a')
-                             code_gens.write("import requests"+"\n"+"import pyfirmata"+"\nfrom itertools import count")
-                             code_gens.write("\ntry:")
-                             data_split = extract_payload
-                             project_name = list(data_split.get('data_joint'))[0]
-                             print("project_name ",project_name) # Project_name
-                             machine_name = list(data_split.get('data_joint').get(project_name))[0]
-                             print("Machine_name ",machine_name) # Machine_name
-                             data_joint_json = data_split.get('data_joint').get(project_name).get(machine_name)
-                             joint_list = list(data_joint_json)
-                             print("Data_update_joint_writer ",data_joint_json)
-                             for j in joint_list:
-                                          #print(data_joint_json.get(j)) 
-                                          #Generate the library of the python code 
-                                          serial_port = data_joint_json.get(j).get('Port_address')
-                                          Serial_separator[serial_port] = j 
-                                          #Check the serial device connection 
-                                          Serial_datas[j] = serial_port         
-                                          #Check type of motor 
-                                          #Check signal type control
-                              #append the list of the serial into the serial separator
-                             for s in list(Serial_separator):
-                                         code_gens.write("\n\thardware_"+s.split("/")[len(s.split("/"))-1]+" = pyfirmata.ArduinoMega('"+serial_port+"')")
-                                         mem_serial_name.append("hardware_"+s.split("/")[len(s.split("/"))-1])
-                             for hc in joint_list:
-                                      print(data_joint_json.get(hc))
-                                      joint_dats = data_joint_json.get(hc)
-                                      for ir in list(joint_dats):
-                                                print(hc,ir)
-                                                list_mcus_pack = ['mcus_code_number','mcus_families',hc+' communication','mcus_package','mcus_pins']
-                                                if ir == list_mcus_pack[0]:
-                                                             mcus_name = joint_dats.get(ir)+joint_dats.get('mcus_package')      
-                                                             mcus_fam = joint_dats.get('mcus_families')
-                                                             io_control = joint_dats.get('mcus_IO')
-                                                             mcus_pins = joint_dats.get('mcus_pins').get('pin_name')
-                                                             print(joint_dats.get('mcus_families'),mcus_name)                          
-                                                             #Get the name of the package                              
-                                                             res_map = requests.get(mcus_pin_map) 
-                                                             pin_map = res_map.json().get(mcus_fam).get(mcus_name)
-                                                             print(pin_map)
-                                                             print("Pin_from_mcus_map ",pin_map.get(mcus_pins))
-                                                             data_io_control = {'Servo_PWM_output':'s'}
-                                                             code_gens.write("\n"+"\t"+hc+"_servo = "+" hardware_"+Serial_datas[j].split("/")[len(s.split("/"))-1]+".get_pin('d:"+str(pin_map.get(mcus_pins))+":"+data_io_control.get(io_control)+"')")
-                             
-                             code_gens.write("\nexcept:"+"\n\t"+"print('Serial device not found')") 
-                             code_gens.write("\nfor r in count(0):")
-                             code_gens.write("\n\t\ttry:"+"\n\t\t\tres = requests.get('"+server_joint+"')"+"\n\t\t\tjoint_parameters = res.json()"+"\n\t\t\temail = list(joint_parameters)[0]"+"\n\t\t\tproject_name = list(joint_parameters.get(email))[0]"+"\n\t\t\tjoint_type = list(joint_parameters.get(email).get(project_name))[0]"+"\n\t\t\tjoint_motion = joint_parameters.get(email).get(project_name).get(joint_type)")
-                             for hc in joint_list:
-                                             code_gens.write("\n\t\t\t"+hc+" = joint_motion.get('"+hc+"')")
-                                             code_gens.write("\n\t\t\tprint('Joint "+hc+"',"+hc+",abs(float("+hc+")))")
-                                             code_gens.write("\n\t\t\tif float("+hc+") >= 0:"+"\n\t\t\t\t"+hc+"_servo.write(abs(float("+hc+")))")
-                                             code_gens.write("\n\t\t\tif float("+hc+") <= 0:"+"\n\t\t\t\t"+hc+"_servo.write(90+abs(float("+hc+")))")   
-                             code_gens.write("\n\t\texcept:"+"\n\t\t\t\t"+"print('Serial device not found')") 
-                             #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
-                                                          
-                  if Status_data == "OFF":
-                             print("Status offline stop generating code")                                                                    
-                                         
+                       for  joints in list(joint_dats):
+                          
+                          board_controller = list(joint_dats.get(joints))[0]    
+                          board_catg[joints] = board_controller
+                          port_type = joint_dats.get(joints).get(board_controller).get('communication') 
+                          #Get the data from the port 
+                          if board_controller == "MCUs":   
+                                 print(joints,joint_dats.get(joints).get(board_controller))  
+                                 #Get the commmunication data_type 
+                                 #Mem the data of the joint function
+                                 if port_type == "Serial":
+                                                                        
+                                       port_address = joint_dats.get(joints).get(board_controller).get('Port_address')  # Get the serial usb port or the data of the 
+                                       #check port type port data 
+                                       print("Check port type and port data ",port_type,port_address) # Check port data and port type 
+                                       serial_group[joints] = port_address # Check the port address data of the
+                                       serial_separator[port_address] = joints  #Get the intercept address include as list in here 
+                                       serial_list[port_type] = list(serial_separator)  # get the list of the serial ssperator in here to running in the loop generate the control function 
+                                       Commu_check_data[joints] = port_type+","+board_controller
+                                       print("Data_port_container",serial_group,serial_separator,serial_list,Commu_check_data)# Get the serial data list group and separator           
+
+                          if board_controller == "SBC":   
+                                 print(joints,joint_dats.get(joints).get(board_controller))        
+                                 #Get the communication data_type 
+                                 #Mem the data of joint parameter function
+                                 if port_type == "I2C":     
+                                           print("I2C communication data mem function address port") 
+                                           board_i2c_controller = joint_dats.get(joints).get(board_controller).get('i2c_sbc_devices') 
+                                           serial_group[joints] = joint_dats.get(joints).get(board_controller).get('i2c_sbc_devices') 
+                                           serial_separator[board_i2c_controller] = joints
+                                           serial_list[port_type] = list(serial_separator)
+                                           Commu_check_data[joints] = port_type+","+board_controller  
+                                           print("Data_i2c_container",serial_group,serial_separator,serial_list,Commu_check_data)
+
+                          
+                       #for joints_com in list(Commu_check_data):
+                       print("Generating library code.....")
+                       code_gens = open("/home/"+user+"/Joint_remote_controller.py",'a')
+                       if "I2C" in list(serial_list):
+                                           code_gens.write("import os"+"\nimport json"+"\nimport requests"+"\nimport serial"+"\nimport busio"+"\nimport smbus"+"\nimport pyfirmata"+"\nfrom board import SCL, SDA"+"\nfrom adafruit_motor import servo"+"\nfrom adafruit_pca9685 import PCA9685"+"\nfrom gpiozero.pins.pigpio import PiGPIOFactory"+"\nfrom gpiozero import AngularServo,LED"+"\nfrom itertools import count"+"\nimport busio"+"\nimport smbus"+"\nfrom board import SCL,SDA"+"\nfrom adafruit_motor import servo"+"\nfrom adafruit_pca9685 import PCA9685")
+                                           #code_gens.write("import os"+"\nimport json"+"\nimport requests"+"\nimport serial"+"\nimport busio"+"\nimport smbus"+"\nimport pyfirmata"+"\nfrom board import SCL, SDA"+"\nfrom adafruit_motor import servo"+"\nfrom adafruit_pca9685 import PCA9685"+"\nfrom gpiozero.pins.pigpio import PiGPIOFactory"+"\nfrom gpiozero import AngularServo,LED"+"\nfrom itertools import count")
+                                           code_gens = open("/home/"+user+"/Joint_remote_controller.py",'a')     
+                                           #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..
+                                                        # Generate header and serial port controller 
+                                           for joints_com in list(Commu_check_data):
+                                                        #get the data joint communication in the loop to generate the code inside 
+                                                        print("Generating the body code controller i2c found......")  
+                                                        #Generate the joint data
+                                                        board_controllers = Commu_check_data.get(joints_com).split(",")[1]  #Get the data of the board controller                    
+                                                        if board_controllers == "SBC":
+                                                                    print("Check control data")
+                                                                    if Commu_check_data.get(joints_com).split(",")[0] == "I2C": 
+                                                                                       print("Generate the i2c data of joints ......") 
+                                                                                       if serial_group.get(joints_com)  == "PCA_9685":
+                                                                                                    print("Generating controller board ",serial_group.get(joints_com))
+                                                                                                    #code_gens.write("\ntry:"+"\n\thardware_"+port_ad.split("/")[len(port_ad.split("/"))-1]+" = pyfirmata.ArduinoMega('"+port_ad+"')")
+                                                                                                    code_gens.write("\ntry:"+"\n\ti2c = busio.I2C(SCL, SDA)")
+                                                                                                    code_gens.write("\n\tpca = PCA9685(i2c)") 
+                                                                                                    code_gens.write("\n\tpca.frequency = 50")   
+                                                                                                    #code_gens = open("/home/"+user+"/urdf_creator_template/Joint_remote_controller.py",'a')     
+            
+                                                        if board_controllers == "MCUs": 
+                                                                    print("Check control data")  
+                                                                    if Commu_check_data.get(joints_com).split(",")[0] == "Serial": 
+                                                                                       print("Generate the serial data of joints....")
+                                                                                       port_ad = serial_group.get(joints_com)
+                                                                                       print("Serial port address ",port_ad)
+                                                                                       code_gens.write("\n\thardware_"+port_ad.split("/")[len(port_ad.split("/"))-1]+" = pyfirmata.ArduinoMega('"+port_ad+"')")
+                                          
+                                            
+                                           #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
+                                                            #Generate the joint controller algorithm  
+                                           for joints_com in list(Commu_check_data): 
+                                                           print("Generate the joint function control algorithm")
+                                                           print(Commu_check_data.get(joints_com).split(",")[1])  
+                                                           
+                                                           if Commu_check_data.get(joints_com).split(",")[1] == "SBC":
+                                                                                 
+                                                                                 if Commu_check_data.get(joints_com).split(",")[0] == "I2C": 
+                                                                                                         print("Generate the i2c control board function")
+                                                                                                         pin_data_sbc = joint_dats.get(joints_com).get(Commu_check_data.get(joints_com).split(",")[1]).get("i2c_sbc_pin")                      
+                                                                                                         print(pin_data_sbc)
+                                                                                                         code_gens.write("\n\t"+joints_com+"_servo_"+Commu_check_data.get(joints_com).split(",")[0]+" = servo.Servo(pca.channels["+pin_data_sbc+"])")           
+                                                           if Commu_check_data.get(joints_com).split(",")[1] == "MCUs":
+                                                                                 if Commu_check_data.get(joints_com).split(",")[0] == "Serial":
+                                                                                                         print(Commu_check_data)
+                                                                                                         print("Generate the serial control board function") 
+                                                                                                         mcus_IO = joint_dats.get(joints_com).get(board_controller).get('mcus_IO')
+                                                                                                         mcus_pins = joint_dats.get(joints_com).get(board_controller).get('mcus_pins') 
+                                                                                                         mcus_fam = joint_dats.get(joints_com).get(board_controller).get('mcus_families')
+                                                                                                         mcus_name = joint_dats.get(joints_com).get(board_controller).get('mcus_code_number') + joint_dats.get(joints_com).get(board_controller).get('mcus_package')
+                                                                                                         #Get the mcus_name data combine with the 2 parts package 
+                                                                                                         res_map = requests.get(mcus_pin_map) 
+                                                                                                         pin_map = res_map.json().get(mcus_fam).get(mcus_name)
+                                                                                                         #check the mcus_IO data 
+                                                                                                         if mcus_IO == "Servo_PWM_output":
+                                                                                                                   io_function = data_io_control.get(mcus_IO)
+                                                                                                                   mcus_pins_data = mcus_pins.get('pin_name') # Get the pin name in real-time
+                                                                                                                   code_gens.write("\n\t"+joints_com+"_"+joint_dats.get(joints_com).get(board_controller).get("mcus_IO")+" = hardware_"+port_ad.split("/")[len(port_ad.split("/"))-1]+".get_pin('d:"+str(pin_map.get(mcus_pins_data))+":"+io_function+"')")
+                                                                                                                   #Get the pins data of the name of joint 
+
+                                                                                                         if mcus_IO == "PWM_output":
+                                                                                                                   #Get the pwm data of the serial control of the DC motor
+                                                                                                                   io_function = data_io_control.get(mcus_IO)   
+                                                                                                                   for io_list in list(mcus_pins):
+                                                                                                                          pin_physical_PI = mcus_pins.get(io_list).get('pin_name') #3 Get the pins name         
+                                                                                                                          code_gens.write("\n\t"+joints_com+"_"+joint_dats.get(joints_com).get(board_controller).get("mcus_IO")+"_"+io_list+" = hardware_"+port_ad.split("/")[len(port_ad.split("/"))-1]+".get_pin('d:"+str(pin_map.get(pin_physical_PI))+":"+str(io_function)+"')")                   
+                                                            
+                                           #Turn_off_data(code_gens)                           
+                       if "I2C" not in list(serial_list):
+                                           code_gens.write("import os"+"\nimport json"+"\nimport requests"+"\nimport serial"+"\nimport pyfirmata"+"\nfrom itertools import count") 
+                                           code_gens = open("/home/"+user+"/Joint_remote_controller.py",'a')
+                                           for joints_com in list(Commu_check_data):
+                                                        print("Genereating the body code controller serial and other found....")
+                                           Turn_off_data(user,extract_data,data_joint_update,code_gens,Live_URL)          
+                       code_gens.write("\nexcept:\n\t\tprint('Package iot control server not found!')")                                                                                                                                                                        
+                       code_gens.write("\nfor i in count(0):"+"\n\ttry:"+"\n\t\tres = requests.get('https://roboreactor.com/package_iot_control')"+"\n\t\tjoint_parameters = res.json()"+"\n\t\temail = list(joint_parameters)[0]"+"\n\t\tproject_name = list(joint_parameters.get(email))[0]"+"\n\t\tjoint_type = list(joint_parameters.get(email).get(project_name))[0]"+"\n\t\tjoint_motion = joint_parameters.get(email).get(project_name).get(joint_type)") 
+                       #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                                          #Generate Joint  control algorithm data 
+                       
+                       
+                       for joints_data in list(Commu_check_data):
+   
+                                       if Commu_check_data.get(joints_data).split(",")[1] == "SBC":
+                                                              print("Generate single board computer joint algorithm") 
+                                                              code_gens.write("\n\t\t"+joints_data+" = joint_motion.get('"+joints_data+"')")  # Get the joint motion control 
+                                                              code_gens.write("\n\t\t"+"print('Joint "+joints_data+"',"+joints_data+",abs(float("+joints_data+")))")
+                                                              #Get joint status
+                                                              code_gens.write("\n\t\tif float("+joints_data+") >= 0:")  
+                                                              code_gens.write("\n\t\t\t"+joints_data+"_servo_"+Commu_check_data.get(joints_data).split(",")[0]+".angle = (abs(float("+joints_data+")))") 
+                                                              code_gens.write("\n\t\tif float("+joints_data+") <= 0:")  
+                                                              code_gens.write("\n\t\t\t"+joints_data+"_servo_"+Commu_check_data.get(joints_data).split(",")[0]+".angle = (90+abs(float("+joints_data+")))")           
+                                       if Commu_check_data.get(joints_data).split(",")[1] == "MCUs":
+                                                              print("Generate microcontroller joint algorithm") 
+                                                              if Commu_check_data.get(joints_data).split(",")[0] == "Serial":  # Get  I2C ata communication     
+                                                                                  mcus_IO = joint_dats.get(joints_data).get(board_controller).get('mcus_IO')
+                                                                                  if mcus_IO == "Servo_PWM_output":       
+                                                                                           code_gens.write("\n\t\t"+joints_data+" = joint_motion.get('"+joints_data+"')")  # Get the joint motion control 
+                                                                                           code_gens.write("\n\t\t"+"print('Joint "+joints_data+"',"+joints_data+",abs(float("+joints_data+")))")
+                                                                                           #Get joint status
+                                                                                           code_gens.write("\n\t\tif float("+joints_data+") >= 0:")  
+                                                                                           code_gens.write("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get(board_controller).get("mcus_IO")+".write(abs(float("+joints_data+")))") 
+                                                                                           code_gens.write("\n\t\tif float("+joints_data+") <= 0:")  
+                                                                                           code_gens.write("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get(board_controller).get("mcus_IO")+".write(90+abs(float("+joints_data+")))")  
+            
+                                                                                  if mcus_IO == "PWM_output":
+                                                                                                        print("Generating pin remote control")
+                                                                                                        io_function = joint_dats.get(joints_data).get(board_controller).get(mcus_IO) 
+                                                                                                        mcus_pins = joint_dats.get(joints_data).get(board_controller).get('mcus_pins') 
+                                                                                                        mcus_fam = joint_dats.get(joints_data).get(board_controller).get('mcus_families')
+                                                                                                        mcus_name = joint_dats.get(joints_data).get(board_controller).get('mcus_code_number') + joint_dats.get(joints_data).get(board_controller).get('mcus_package')
+                                                                                                        res_map = requests.get(mcus_pin_map) 
+                                                                                                        pin_map = res_map.json().get(mcus_fam).get(mcus_name)  
+                                                                                                        #for io_list in list(mcus_pins):
+                                                                                                        #            print(io_list)
+                                                                                                        code_gens.write("\n\t\t"+joints_data+" = joint_motion.get('"+joints_data+"')")
+                                                                                                        code_gens.write("\n\t\t"+"print('Joint "+joints_data+"',"+joints_data+",abs(float("+joints_data+")))")
+                                                                                                        #PD control algorithm 
+                                                                                                        #Control the position of the motor based on the pins control function on the H-bridge motor driver  control 
+                                                                                                        polar_switcher = {"Pin_R":"Pin_L","Pin_L":"Pin_R"}  #Pin connection switcher of the motor H-bridge
+                                                                                                        logic_polar = {"max":{"Pin_R":'0',"Pin_L":joints_data},"min":{"Pin_L":'0',"Pin_R":joints_data}}
+                                                                                                        code_gens.write("\n\t\t"+"if float("+joints_data+") == 0:")
+                                                                                                        for io_list in list(mcus_pins):
+                                                                                                                   print(io_list)                                                                     
+                                                                                                                   code_gens.write("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get(board_controller).get("mcus_IO")+"_"+io_list+".write(0)")#("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get("mcus_IO")+"_"+polar_switcher.get(io_list)+".write(0)")
+                                                                                                        code_gens.write("\n\t\t"+"if float("+joints_data+") > 0:")
+                                                                                                        for io_list in list(mcus_pins):
+                                                                                                                    print(io_list)
+                                                                                                                    gpio_logic_max = logic_polar.get('max') # Get the max logic polar 
+                                                                                                                    code_gens.write("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get(board_controller).get("mcus_IO")+"_"+io_list+".write(abs(float("+gpio_logic_max.get(io_list)+"))/360)")
+                                                                                                        code_gens.write("\n\t\t"+"if float("+joints_data+") < 0:")
+                                                                                                        for io_list in list(mcus_pins):
+                                                                                                                               print(io_list)
+                                                                                                                               gpio_logic_min = logic_polar.get('min')
+                                                                                                                               code_gens.write("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get(board_controller).get("mcus_IO")+"_"+io_list+".write(abs(float("+gpio_logic_min.get(io_list)+")))")                    
+                                                                                                        code_gens.write("\n\t\t"+"if float("+joints_data+") < 0:")
+                                                                                                        for io_list in list(mcus_pins):
+                                                                                                                      print(io_list)
+                                                                                                                      gpio_logic_min = logic_polar.get('min')
+                                                                                                                      code_gens.write("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get(board_controller).get("mcus_IO")+"_"+io_list+".write(abs(float("+gpio_logic_min.get(io_list)+"))/360)")
+                                       Turn_off_data(user,extract_data,data_joint_update,code_gens,Live_URL)
+                       code_gens.write("\n\texcept:\n\t\tprint('Package iot control server not found!')")                                                                                                                                                                        
+                       code_gens.close()
+                       #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>...
+                                           # Activate OFF status data 
+                      
+                   if extract_data['status'] == "OFF":
+                              print("Now status offline stop generating the code ")    
+
              except:
                 print("Server not found on the post request to the web services")  
 
