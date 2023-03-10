@@ -674,12 +674,8 @@ def Joint_remote_control():
                                                                                                         for io_list in list(mcus_pins):
                                                                                                                                print(io_list)
                                                                                                                                gpio_logic_min = logic_polar.get('min')
-                                                                                                                               code_gens.write("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get(board_controller).get("mcus_IO")+"_"+io_list+".write(abs(float("+gpio_logic_min.get(io_list)+")))")                    
-                                                                                                        code_gens.write("\n\t\t"+"if float("+joints_data+") < 0:")
-                                                                                                        for io_list in list(mcus_pins):
-                                                                                                                      print(io_list)
-                                                                                                                      gpio_logic_min = logic_polar.get('min')
-                                                                                                                      code_gens.write("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get(board_controller).get("mcus_IO")+"_"+io_list+".write(abs(float("+gpio_logic_min.get(io_list)+"))/360)")
+                                                                                                                               code_gens.write("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get(board_controller).get("mcus_IO")+"_"+io_list+".write(abs(float("+gpio_logic_min.get(io_list)+"))/360)")                    
+                                                                                                       
                                        Turn_off_data(user,extract_data,data_joint_update,code_gens,Live_URL)
                        code_gens.write("\n\texcept:\n\t\tprint('Package iot control server not found!')")                                                                                                                                                                        
                        code_gens.close()
