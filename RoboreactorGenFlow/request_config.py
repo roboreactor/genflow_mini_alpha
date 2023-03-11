@@ -1,6 +1,7 @@
 import os 
 import jwt 
 import json 
+import time
 import socket
 import requests 
 import configparser 
@@ -613,14 +614,16 @@ def Joint_remote_control():
                        if "I2C" not in list(serial_list):
                                            code_gens.write("import os"+"\nimport json"+"\nimport requests"+"\nimport serial"+"\nimport pyfirmata"+"\nfrom itertools import count") 
                                            code_gens = open("/home/"+user+"/Joint_remote_controller.py",'a')
-                                           code_gens.write("\ntry")
-                                           for joints_com in list(Commu_check_data):
-                                                        print("Genereating the body code controller serial and other found....")
-                                                        if board_controllers == "MCUs": 
-                                                                    print("Check control data")  
-                                                                    if Commu_check_data.get(joints_com).split(",")[0] == "Serial": 
+                                           code_gens.write("\ntry:")
+                                           #for joints_com in list(Commu_check_data):
+                                           print("Genereating the body code controller serial and other found....")
+                                           #board_controllers = Commu_check_data.get(joints_com).split(",")[1]  #Get the data of the board controller 
+                                           #if board_controllers == "MCUs":
+                                           for port_ad in serial_list.get("Serial"):     
+                                                                    #print("Check control data")  
+                                                                    #if Commu_check_data.get(joints_com).split(",")[0] == "Serial": 
                                                                                        print("Generate the serial data of joints....")
-                                                                                       port_ad = serial_group.get(joints_com)
+                                                                                       #port_ad = serial_group.get(joints_com)
                                                                                        print("Serial port address ",port_ad)
                                                                                        code_gens.write("\n\thardware_"+port_ad.split("/")[len(port_ad.split("/"))-1]+" = pyfirmata.ArduinoMega('"+port_ad+"')")
                                            for joints_com in list(Commu_check_data):
@@ -711,7 +714,7 @@ def Joint_remote_control():
                                                                                                                                code_gens.write("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get(board_controller).get("mcus_IO")+"_"+io_list+".write(abs(float("+gpio_logic_min.get(io_list)+"))/360)")                    
                                        #Generate the systemd file                                                                
                                        #Generate the systemd confgurection file 
-                                       print("Generrate the systemd file")        
+                                       print("Generrating the systemd file 4sec.......")        
                                        Generate_path = "/usr/lib/systemd/system/" 
                                        project_name = 'Joint_remote_controller'   
                                        mode = 'multi-user.target' 
@@ -740,6 +743,7 @@ def Joint_remote_control():
                                        configfile = open(Generate_path+"/"+project_name+".service",'w')
                                        config.write(configfile)
                                        os.system("sudo chmod -R 777 "+Generate_path+"/"+project_name+".service")
+                                       time.sleep(8)
                                        os.system("sudo systemctl daemon-reload") 
                                        os.system("sudo systemctl enable "+project_name+".service") 
                                        os.system("sudo systemctl restart "+project_name+".service")
