@@ -544,6 +544,7 @@ def Joint_remote_control():
                                            code_gens = open("/home/"+user+"/Joint_remote_controller.py",'a')     
                                            #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..
                                                         # Generate header and serial port controller 
+                                           code_gens.write("\ntry:")             
                                            for joints_com in list(Commu_check_data):
                                                         #get the data joint communication in the loop to generate the code inside 
                                                         print("Generating the body code controller i2c found......")  
@@ -556,7 +557,7 @@ def Joint_remote_control():
                                                                                        if serial_group.get(joints_com)  == "PCA_9685":
                                                                                                     print("Generating controller board ",serial_group.get(joints_com))
                                                                                                     #code_gens.write("\ntry:"+"\n\thardware_"+port_ad.split("/")[len(port_ad.split("/"))-1]+" = pyfirmata.ArduinoMega('"+port_ad+"')")
-                                                                                                    code_gens.write("\ntry:"+"\n\ti2c = busio.I2C(SCL, SDA)")
+                                                                                                    code_gens.write("\n\ti2c = busio.I2C(SCL, SDA)")
                                                                                                     code_gens.write("\n\tpca = PCA9685(i2c)") 
                                                                                                     code_gens.write("\n\tpca.frequency = 50")   
                                                                                                     #code_gens = open("/home/"+user+"/urdf_creator_template/Joint_remote_controller.py",'a')     
@@ -612,9 +613,42 @@ def Joint_remote_control():
                        if "I2C" not in list(serial_list):
                                            code_gens.write("import os"+"\nimport json"+"\nimport requests"+"\nimport serial"+"\nimport pyfirmata"+"\nfrom itertools import count") 
                                            code_gens = open("/home/"+user+"/Joint_remote_controller.py",'a')
+                                           code_gens.write("\ntry")
                                            for joints_com in list(Commu_check_data):
                                                         print("Genereating the body code controller serial and other found....")
-                                           Turn_off_data(user,extract_data,data_joint_update,code_gens,Live_URL)          
+                                                        if board_controllers == "MCUs": 
+                                                                    print("Check control data")  
+                                                                    if Commu_check_data.get(joints_com).split(",")[0] == "Serial": 
+                                                                                       print("Generate the serial data of joints....")
+                                                                                       port_ad = serial_group.get(joints_com)
+                                                                                       print("Serial port address ",port_ad)
+                                                                                       code_gens.write("\n\thardware_"+port_ad.split("/")[len(port_ad.split("/"))-1]+" = pyfirmata.ArduinoMega('"+port_ad+"')")
+                                           for joints_com in list(Commu_check_data):
+                                                        if Commu_check_data.get(joints_com).split(",")[1] == "MCUs":
+                                                                                 if Commu_check_data.get(joints_com).split(",")[0] == "Serial":
+                                                                                                         print(Commu_check_data)
+                                                                                                         print("Generate the serial control board function") 
+                                                                                                         mcus_IO = joint_dats.get(joints_com).get(board_controller).get('mcus_IO')
+                                                                                                         mcus_pins = joint_dats.get(joints_com).get(board_controller).get('mcus_pins') 
+                                                                                                         mcus_fam = joint_dats.get(joints_com).get(board_controller).get('mcus_families')
+                                                                                                         mcus_name = joint_dats.get(joints_com).get(board_controller).get('mcus_code_number') + joint_dats.get(joints_com).get(board_controller).get('mcus_package')
+                                                                                                         #Get the mcus_name data combine with the 2 parts package 
+                                                                                                         res_map = requests.get(mcus_pin_map) 
+                                                                                                         pin_map = res_map.json().get(mcus_fam).get(mcus_name)
+                                                                                                         #check the mcus_IO data 
+                                                                                                         if mcus_IO == "Servo_PWM_output":
+                                                                                                                   io_function = data_io_control.get(mcus_IO)
+                                                                                                                   mcus_pins_data = mcus_pins.get('pin_name') # Get the pin name in real-time
+                                                                                                                   code_gens.write("\n\t"+joints_com+"_"+joint_dats.get(joints_com).get(board_controller).get("mcus_IO")+" = hardware_"+port_ad.split("/")[len(port_ad.split("/"))-1]+".get_pin('d:"+str(pin_map.get(mcus_pins_data))+":"+io_function+"')")
+                                                                                                                   #Get the pins data of the name of joint 
+
+                                                                                                         if mcus_IO == "PWM_output":
+                                                                                                                   #Get the pwm data of the serial control of the DC motor
+                                                                                                                   io_function = data_io_control.get(mcus_IO)   
+                                                                                                                   for io_list in list(mcus_pins):
+                                                                                                                          pin_physical_PI = mcus_pins.get(io_list).get('pin_name') #3 Get the pins name         
+                                                                                                                          code_gens.write("\n\t"+joints_com+"_"+joint_dats.get(joints_com).get(board_controller).get("mcus_IO")+"_"+io_list+" = hardware_"+port_ad.split("/")[len(port_ad.split("/"))-1]+".get_pin('d:"+str(pin_map.get(pin_physical_PI))+":"+str(io_function)+"')")                   
+                                           #Turn_off_data(user,extract_data,data_joint_update,code_gens,Live_URL)          
                        code_gens.write("\nexcept:\n\t\tprint('Package iot control server not found!')")                                                                                                                                                                        
                        code_gens.write("\nfor i in count(0):"+"\n\ttry:"+"\n\t\tres = requests.get('https://roboreactor.com/package_iot_control')"+"\n\t\tjoint_parameters = res.json()"+"\n\t\temail = list(joint_parameters)[0]"+"\n\t\tproject_name = list(joint_parameters.get(email))[0]"+"\n\t\tjoint_type = list(joint_parameters.get(email).get(project_name))[0]"+"\n\t\tjoint_motion = joint_parameters.get(email).get(project_name).get(joint_type)") 
                        #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -675,7 +709,40 @@ def Joint_remote_control():
                                                                                                                                print(io_list)
                                                                                                                                gpio_logic_min = logic_polar.get('min')
                                                                                                                                code_gens.write("\n\t\t\t"+joints_data+"_"+joint_dats.get(joints_data).get(board_controller).get("mcus_IO")+"_"+io_list+".write(abs(float("+gpio_logic_min.get(io_list)+"))/360)")                    
-                                                                                                       
+                                       #Generate the systemd file                                                                
+                                       #Generate the systemd confgurection file 
+                                       print("Generrate the systemd file")        
+                                       Generate_path = "/usr/lib/systemd/system/" 
+                                       project_name = 'Joint_remote_controller'   
+                                       mode = 'multi-user.target' 
+                                       Python_exc_path = "/usr/bin/python3 "
+                                       Working_path1 = "/home/"+user+"/" 
+                                       #Working_path = "/home/"+device_name+"/Roboreactor_projects/"+Project_name
+                                       Execute_path = "/home/"+user+"/"+project_name+".py"  
+                                       #Execute_path1 = "/home/"+device_name+"/RoboreactorGenFlow"+"/Multiple_node_data_projection.py" 
+                                       config = configparser.ConfigParser() 
+                                       config.optionxform = str
+                                       settings = ['Unit','Service','Install']
+                                       #Unit
+                                       config.add_section(settings[0]) # Getting the section added into the list topic 
+                                       config.set(settings[0],'Description',"Project:"+str(project_name)) 
+                                       config.set(settings[0],'After',str(mode))
+                                       #Service 
+                                       config.add_section(settings[1])
+                                       config.set(settings[1],'Type','idle')
+                                       config.set(settings[1],'WorkingDirectory',Working_path1)
+                                       config.set(settings[1],'User',str(user))
+                                       config.set(settings[1],'ExecStart',str(Python_exc_path+Execute_path))
+                                       config.set(settings[1],'WantedBy','always')
+                                       #Install 
+                                       config.add_section(settings[2])
+                                       config.set(settings[2],'WantedBy',str(mode))
+                                       configfile = open(Generate_path+"/"+project_name+".service",'w')
+                                       config.write(configfile)
+                                       os.system("sudo chmod -R 777 "+Generate_path+"/"+project_name+".service")
+                                       os.system("sudo systemctl daemon-reload") 
+                                       os.system("sudo systemctl enable "+project_name+".service") 
+                                       os.system("sudo systemctl restart "+project_name+".service")
                                        Turn_off_data(user,extract_data,data_joint_update,code_gens,Live_URL)
                        code_gens.write("\n\texcept:\n\t\tprint('Package iot control server not found!')")                                                                                                                                                                        
                        code_gens.close()
