@@ -132,7 +132,7 @@ bash installer.sh
 
 </summary>
 
-- pub,sub,serial node channel and variable 🚀chanapai
+- pub,sub,serial node channel and variable  ✅ chanapai
 - RSSI and beacon indoor positioning system with more precise and flexible algorithm 📌chanapai
 - combie body detection, obj recognition ,obj detection ✅chanapai
 - mcu config ,compile ,flash script 📌tanatorn
@@ -142,9 +142,9 @@ bash installer.sh
 - update manager ✅chanapai
 - system loads (from jtop) 📌tanatorn
 - download log file 📌chanapai
-- Motion system serial superposition serial problem 🚀chanapai 
+- Motion system serial superposition serial problem  ✅chanapai 
 - UI update on the website ✅chanapai   
-- Motion planing on the website 🚀chanapai
+- Motion planing on the website  ✅chanapai
 </details>
 <div align="right">[ <a href="#roboreactor-genflow-mini">☝️to top </a> ]</div>
 
