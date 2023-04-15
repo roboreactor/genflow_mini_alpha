@@ -341,6 +341,7 @@ echo 'Install postgresql server database'
 sudo apt install postgresql-client-common -y 
 sudo apt install postgresql-client -y
 sudo pip3 install flask-marshmallow 
+sudo apt-get install iw -y 
 echo 'Flask auth installation'
 sudo pip3 install requests 
 sudo pip3 install oauthlib 
