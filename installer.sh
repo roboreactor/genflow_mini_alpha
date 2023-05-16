@@ -291,7 +291,8 @@ sudo snap install heroku --classic
 sudo pip3 install openpyxl 
 sudo pip3 install pyzbar  
 sudo pip3 install qrcode 
-sudo pip3 install printrun 
+sudo pip3 install printrun
+sudo pip3 install laspy
 git clone https://github.com/kliment/Printrun.git
 cd ~/Printrun
 #sudo python3 -m pip install Cython
