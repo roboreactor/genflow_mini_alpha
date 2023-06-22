@@ -1,4 +1,4 @@
-<div align="center">
+f<div align="center">
 <img width="200" src="./RoboreactorGenFlow/static/favicon.png">
 <br>
 
@@ -148,10 +148,6 @@ bash installer.sh
 </details>
 <div align="right">[ <a href="#roboreactor-genflow-mini">☝️to top </a> ]</div>
 
-# Credits
 
-## inspired by
-
-- KevinOConnor [Klipper](https://github.com/Klipper3d/klipper)
 
 <div align="right">[ <a href="#roboreactor-genflow-mini">☝️to top </a> ]</div>
